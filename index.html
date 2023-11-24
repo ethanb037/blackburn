@@ -1,28 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>blackburn??</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            font-family: Georgia, serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
 
+        h1 {
+            text-align: center;
+            position: absolute;
+        }
+    </style>
+</head>
 <body>
 
     <h1 id="header">they're trying to find a reason...</h1>
-
-    <a href="another_page.html" target="_blank">
-        <img src="placeholder.jpg" alt="Placeholder Image">
+    
+     <a href="pages/home.html" target="_blank">
+        <img src="images/me.jpg".jpg" alt="portrait?">
     </a>
 
     <script>
-        // Randomly place the header around the image
+        // Change header text
+        document.getElementById('header').innerText = "they're trying to find a reason...";
+
+        // Randomly place the header within the visible area
         var header = document.getElementById('header');
         var headerRect = header.getBoundingClientRect();
-        var img = document.querySelector('img');
-        var imgRect = img.getBoundingClientRect();
-
         var maxX = window.innerWidth - headerRect.width;
         var maxY = window.innerHeight - headerRect.height;
 
@@ -31,15 +43,7 @@
 
         header.style.top = randomY + 'px';
         header.style.left = randomX + 'px';
-
-        // Center the image
-        var imgX = (window.innerWidth - imgRect.width) / 2;
-        var imgY = (window.innerHeight - imgRect.height) / 2;
-
-        img.style.top = imgY + 'px';
-        img.style.left = imgX + 'px';
     </script>
 
 </body>
-
 </html>
