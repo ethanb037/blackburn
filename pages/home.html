@@ -1,6 +1,62 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <h1> there is something not right yet. i're looking. </h1></p>
-  </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>blackburn - home</title>
+    <style>
+        body {
+            background-color: black;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            position: relative;
+        }
+
+        .image-container {
+            position: absolute;
+        }
+
+        .image-container:nth-child(1) {
+            top: 5%;
+            left: 10%;
+        }
+
+        .image-container:nth-child(2) {
+            top: 40%;
+            left: 60%;
+        }
+
+        .image-container:nth-child(3) {
+            top: 80%;
+            left: 30%;
+        }
+
+        img {
+            cursor: pointer;
+            margin: 10px; /* Adjust the margin as needed */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="image-container">
+        <a href="writings.html" target="_blank">
+            <img src="images/writings.png" alt="Page 1">
+        </a>
+    </div>
+
+    <div class="image-container">
+        <a href="sounds.html" target="_blank">
+            <img src="images/sounds.png" alt="Page 2">
+        </a>
+    </div>
+
+    <div class="image-container">
+        <a href="ideas.html" target="_blank">
+            <img src="images/ideas.png" alt="Page 3">
+        </a>
+    </div>
+
+</body>
 </html>
