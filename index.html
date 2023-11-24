@@ -1,6 +1,46 @@
-<!DOCTYPE html> 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <h1><i></i> this is going to take some time.</i></h1>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black and White Text Website</title>
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            font-family: Georgia, serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            position: absolute;
+        }
+    </style>
 </head>
+<body>
+
+    <h1 id="header">blackburn?</h1>
+
+    <script>
+        // Change header text
+        document.getElementById('header').innerText = "They're trying to find a reason";
+
+        // Randomly place the header within the visible area
+        var header = document.getElementById('header');
+        var headerRect = header.getBoundingClientRect();
+        var maxX = window.innerWidth - headerRect.width;
+        var maxY = window.innerHeight - headerRect.height;
+
+        var randomX = Math.random() * maxX;
+        var randomY = Math.random() * maxY;
+
+        header.style.top = randomY + 'px';
+        header.style.left = randomX + 'px';
+    </script>
+
+</body>
 </html>
+
