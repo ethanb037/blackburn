@@ -1,7 +1,13 @@
+// Variables
+$background-color: black;
+$text-color: white;
+$font-family: Georgia, serif;
+$max-image-width: 80%;
+
 body {
-    background-color: black;
-    color: white;
-    font-family: Georgia, serif;
+    background-color: $background-color;
+    color: $text-color;
+    font-family: $font-family;
     margin: 0;
     height: 100vh;
     overflow: hidden;
@@ -17,7 +23,7 @@ h1 {
 a {
     display: block;
     margin: 0 auto;
-    max-width: 80%;
+    max-width: $max-image-width;
     position: relative;
     z-index: 0;
 }
