@@ -3,47 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ars culus??</title>
+    <title>Lullabies. Yours, Ours.</title>
     <style>
         body {
-            background-color: white;
-            color: black;
-            font-family: Georgia, serif;
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
+            font-family: sans-serif;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            position: absolute;
+            font-size: 48px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .image {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+            max-height: 800px;
+            object-fit: contain;
+        }
+
+        .text {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        LULLABIES. YOURS, OURS.
+    </div>
 
-    <h1 id="header">they're trying to find a reason...</h1>
-    
-     <a href="pages/home.html" target="_blank">
-        <img src="images/me.jpg".jpg" alt="portrait?">
-    </a>
+    <img src="images/frame.png" alt="Lullabies" class="image">
 
-    <script>
-        // Change header text
-        document.getElementById('header').innerText = "they're trying to find a reason...";
+    <div class="text">
+        Record the <b>singing, humming, playing, talking</b> about the songs you fell asleep to. Hear them at Limestone Books, Maastricht, Netherlands. 12th - 16th December, 2023.
+    </div>
 
-        // Randomly place the header within the visible area
-        var header = document.getElementById('header');
-        var headerRect = header.getBoundingClientRect();
-        var maxX = window.innerWidth - headerRect.width;
-        var maxY = window.innerHeight - headerRect.height;
-
-        var randomX = Math.random() * maxX;
-        var randomY = Math.random() * maxY;
-
-        header.style.top = randomY + 'px';
-        header.style.left = randomX + 'px';
-    </script>
-<p>you have to click the nose to enter.</p>
+    <div class="footer">
+        <a href="pages/home.html"><img src="images/me.jpg" alt="Home" width="50px" height="50px"></a>
+        <p> click to enter. </p>
+    </div>
 </body>
 </html>
