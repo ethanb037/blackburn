@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lullabies - form</title>
+  <style>
+    body {
+      background-color: #000;
+      font-family: Helvetica Neue, sans-serif;
+      color: #fff;
+      text-align: unset;
+      margin: 0;
+      padding: 0;
+    }
+
+    #textContainer {
+      font-weight: bold;
+      font-size: 100px;
+      text-shadow: 0px 0px 5px #fff;
+      white-space: nowrap;
+      margin-top: 50px; /* Add spacing above the text */
+    }
+
+    .hidden {
+      color: transparent;
+    }
+
+    .sleepsongs {
+      font-size: 50px;
+      margin-top: 20px; /* Add spacing below the text */
+    }
+
+    .buttons {
+      margin-top: 40px; /* Add spacing below the sleepsongs text */
+      text-align: left;
+    }
+
+    .button {
+      background-color: transparent;
+      color: #fff;
+      padding: 20px 30px; /* Increase button padding */
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 24px; /* Increase button font size */
+    }
+
+    .button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .imageContainer {
+      margin: 0 auto; /* Center the image horizontally */
+      position: fixed;
+     top: 50%;
+     right: 0;
+     transform: translateY(500%);
+      margin-right: 600px;
+      top: 50px;
+
+    }
+
+    .image {
+      height: 25%;
+      width: 25%; /* Reduce image size to 50% */
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div style="width: 50%;">
+    <div id="textContainer"></div>
+
+    <div class="sleepsongs">your sleepsongs, <br> etched in the <br> fabric of <br> our sounds.</div>
+
+    <div class="buttons">
+      <a href="#" class="button">Android/Web Users, Click Here</a>
+      <a href="#" class="button">iPhone/iPad Users, Click Here</a>
+    </div>
+
+    <div class="imageContainer">
+      <img src="images/logo.png" alt="ars culus" class="image">
+    </div>
+  </div>
+
+  <script>
+    // Get the text container element
+    const textContainer = document.getElementById('textContainer');
+
+    // Clear existing text before each iteration
+    textContainer.innerHTML = '';
+
+    // Split the text into characters
+    const text = "they       are trying to silence us.";
+    const characters = text.toLowerCase().split('');
+
+    // Create and append individual character elements with the 'hidden' class
+    for (let character of characters) {
+      const characterElement = document.createElement('span');
+      characterElement.textContent = character;
+      characterElement.classList.add('hidden');
+      characterElement.style.fontSize = '100px';
+      textContainer.appendChild(characterElement);
+    }
+
+    // Function to toggle character visibility and recursively call itself
+    function toggleCharacterVisibility(characterElement) {
+      characterElement.classList.toggle('hidden');
+      setTimeout(() => toggleCharacterVisibility(characterElement), Math.random() * 3000);
+    }
+
+    // Start the loop for each character
+    for (let i = 0; i < characters.length; i++) {
+      const characterElement = textContainer.children[i];
+      toggleCharacterVisibility(characterElement);
+    }
+  </script>
+</body>
+</html>
