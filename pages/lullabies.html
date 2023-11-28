@@ -31,34 +31,22 @@
       margin-top: 20px; /* Add spacing below the text */
     }
 
-    .buttons {
-      margin-top: 40px; /* Add spacing below the sleepsongs text */
-      text-align: left;
+    .iFrame {
+      display: block;
+      margin-right: 50%;
+      margin-left: 30%;
+      position: relative;
+      z-index: 1;
     }
-
-    .button {
-      background-color: transparent;
-      color: #fff;
-      padding: 20px 30px; /* Increase button padding */
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 24px; /* Increase button font size */
-    }
-
-    .button:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
     .imageContainer {
       margin: 0 auto; /* Center the image horizontally */
-      position: fixed;
-     top: 50%;
-     right: 0;
-     transform: translateY(500%);
+      position: relative;
+      top: 50%;
+      right: 0;
+      transform: translateY(500%);
       margin-right: 600px;
       top: 50px;
-
+      z-index: 0;
     }
 
     .image {
@@ -74,10 +62,9 @@
     <div id="textContainer"></div>
 
     <div class="sleepsongs">your sleepsongs, <br> etched in the <br> fabric of <br> our sounds.</div>
-
-    <div class="buttons">
-      <a href="https://ee-eu.kobotoolbox.org/x/lfyvdF5l" class="button">Android/Web Users, Click Here</a>
-      <a href="https://zuydhogeschool-my.sharepoint.com/:f:/g/personal/2202884blackburn_zuyd_nl/EvydJmLj6XJMr6O7VLR58GoBFeL_5ZhmDp0fiMGxnPxJxQ" class="button">iPhone/iPad Users, Click Here</a>
+    
+    <div class="iFrame">
+      <iframe src=https://ee-eu.kobotoolbox.org/i/lfyvdF5l width="1000" height="800"></iframe>
     </div>
 
     <div class="imageContainer">
@@ -93,7 +80,7 @@
     textContainer.innerHTML = '';
 
     // Split the text into characters
-    const text = "they       are trying to silence us.";
+    const text = "they are trying to silence us.";
     const characters = text.toLowerCase().split('');
 
     // Create and append individual character elements with the 'hidden' class
