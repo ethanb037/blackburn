@@ -53,16 +53,48 @@
     width: 50%;
 }
 
-.text {
-    text-align: center;
-    font-size: 24px;
-    margin-top: 20px;
-}
+    .text {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .placeholder-image1:hover {
+      background-color: #ddd;
+      opacity: 0.7;
+    }
 
-.footer {
-    text-align: center;
-    margin-top: 40px;
-}
+    .placeholder-image2:hover {
+      background-color: #ddd;
+      opacity: 0.7;
+    }
+
+    .placeholder-image3:hover {
+      background-color: #ddd;
+      opacity: 0.7;
+    }
+
+    .placeholder-image1:hover a {
+      display: block;
+    }
+
+    .placeholder-image2:hover a {
+      display: block;
+    }
+
+    .placeholder-image3:hover a {
+      display: block;
+    }
+
+    /* Hide the default placeholder image link */
+    .placeholder-image1 a,
+    .placeholder-image2 a,
+    .placeholder-image3 a {
+      display: none;
+    }
     </style>
 </head>
 <body>
@@ -71,10 +103,10 @@
     </div>
 
     <div class="placeholder-image-container">
-        <div class="placeholder-image1"></div>
-        <div class="placeholder-image2"></div>
-        <div class="placeholder-image3"></div>
-    </div>
+        <a href="pages/noel.html" class="placeholder-image1"></a>
+        <a href="pages/ido.html" class="placeholder-image2"></a>
+        <a href="pages/ethan.html" class="placeholder-image3"></a>
+      </div>
 
     <div class="text">
         <a href="pages/lullabies.html">click here to be a part.</a>
@@ -83,8 +115,7 @@
     </div>
 
     <div class="footer">
-        <a href="pages/home.html"><img src="images/logowhite.png" alt="Home" width="100px" height="100px"></a>
-        <p> click to enter. </p>
+        <img src="images/logowhite.png" alt="logo" width="100px" height="100px"></a>
     </div>
 </body>
 </html>
