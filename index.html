@@ -5,35 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lullabies. Yours, Ours.</title>
     <style>
-        body {
-            font-family: sans-serif;
-        }
+       body {
+    font-family: sans-serif;
+}
 
-        .header {
-            text-align: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: black;
-        }
+.header {
+    text-align: center;
+    font-size: 48px;
+    font-weight: bold;
+    color: black;
+}
 
-        .image {
-            display: block;
-            margin: 0 auto;
-            width: 100%;
-            max-height: 500px;
-            object-fit: contain;
-        }
+.placeholder-image1,
+.placeholder-image2,
+.placeholder-image3 {
+    background-color: #ccc;
+    border: 1px solid #000;
+    margin: 0 10px;
+    display: inline-block;
+    vertical-align: middle;
+    width: 400px; /* 50% larger than the original width of 200px */
+    height: 325px; /* 50% larger than the original height of 150px */
+}
 
-        .text {
-            text-align: center;
-            font-size: 24px;
-            margin-top: 20px;
-        }
+.placeholder-image1 {
+    background-image: url('images/noel.png');
+    background-size: cover;
+    background-position: center;
+}
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-        }
+.placeholder-image2 {
+    background-image: url('images/cookido.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.placeholder-image3 {
+    background-image: url('images/ethan.png');
+    background-size: cover;
+    background-position: center;
+
+}
+
+.placeholder-image-container {
+    text-align: center;
+    margin: 0 auto;
+    width: 50%;
+}
+
+.text {
+    text-align: center;
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+}
     </style>
 </head>
 <body>
@@ -41,17 +70,20 @@
         LULLABIES. YOURS, OURS.
     </div>
 
-    <img src="pages/images/logowhite.png" alt="Lullabies" class="image">
+    <div class="placeholder-image-container">
+        <div class="placeholder-image1"></div>
+        <div class="placeholder-image2"></div>
+        <div class="placeholder-image3"></div>
+    </div>
+
     <div class="text">
         <a href="pages/lullabies.html">click here to be a part.</a>
         <br>
-        Record the <b>singing, humming, playing, talking</b> about the songs you fell asleep to. Hear them at Limestone Books, Maastricht, Netherlands. <br>12th - 16th December, 2023.
+        Record the <b>singing, humming, playing, talking</b> about the songs you fell asleep to. Hear them at Limestone Books, Maastricht, Netherlands. 12th - 16th December, 2023.
     </div>
 
-
-
     <div class="footer">
-        <a href="pages/home.html"><img src="images/me.jpg" alt="Home" width="100px" height="100px"></a>
+        <a href="pages/home.html"><img src="images/logowhite.png" alt="Home" width="100px" height="100px"></a>
         <p> click to enter. </p>
     </div>
 </body>
