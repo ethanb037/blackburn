@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mimesis</title>
+  <style>
+    /* Optional styling for a cleaner look */
+    body {
+      font-family: sans-serif;
+      line-height: 1.5;
+    }
+    p {
+      margin-bottom: 1em;
+    }
+    blockquote {
+      margin-left: 1.5em;
+      padding: 0.5em 1em;
+      border-left: 3px solid #ddd;
+    }
+    .list {
+      margin-left: 1.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Oct, ’23. Mimesis.</h1>
+
+  <p>most things start simply at lines.</p>
+
+  <p>sound is stealing from us.</p>
+
+  <p>distinctions happen because everything begins to our eyes as in/complete pictures. the precision of the image already gets whittled down gradually by the necessity to interpret an image under a language, the first of which being the private language we are the only participants in (the only one that doesn’t obey logics/grammars that it had no part in deciding). the greater the tree expands, to which we need to communicate an image to others, the greater the original ‘picture’ becomes tarnished- language is in this respect inefficient and immobile; Wittgenstein would attest that the limits of my language means the limits of my world.</p>
+
+  <p>the solid ‘pictures’ however lack validity and identity without any fragment of their smaller parts, existing as that which can only be holistically or hermetically perceived, thus, leaving the definition of an expression (artistic or not) utterly reliant on our ability in distinction, which is unreliable enough itself.</p>
+
+  <p>herein lie the boundaries for what quantifies an artistic expression. everything delineated is as improper, fragile, and irrational as what is trying to be described, but art has always existed as a heuristic medium.</p>
+
+  <h2>List 1</h2>
+  <ul class="list">
+    <li>everything that exists in-itself, away from human perception, can be classified as an image, which is the only thing capable of existing outside ourselves. the artist doesn’t live here.
+      <br>essence, thesis, affirmation…</li>
+  </ul>
+
+  <h2>List 2</h2>
+  <ul class="list">
+    <li>everything that exists for-itself, i.e only within our reaction thereof, is a relation. a relation is an observation, a reflection, an introspection... importantly, a relation is untouched and also incommunicable in its most essential form, becoming capable of being fully processed and realized only should someone contain the same experiences, knowledge, and idea as the artist who formed it.
+      <br>idea, antithesis, negation, intention, comparison…</li>
+  </ul>
+
+  <blockquote>
+    <p>"Catastrophe I. Destruction, anti-art: behind every stripped-down façade, an underlying layer becomes visible, behind a torn-down building: the open landscape."</p>
+    <p>-Peter Ablinger, Now!(p.96)</p>
+  </blockquote>
+
+  <blockquote>
+    <p>"Art in relation to life is nothing more than a glove turned inside out. It seems to have the same shapes and contours, but it can never be used for the same purpose. Art teaches nothing about life, just as life teaches us nothing about art."</p>
+    <p>-Morton Feldman, Vertical Thoughts(p.3)</p>
+  </blockquote>
+
+  <h2>List 3</h2>
+  <ul class="list">
+    <li>the crux, or synthesis of both, becomes distributed through its manner, or how a relation is represented in the physical world. it is at this point where the artist lives and breathes. in this stage of my ontology, the relation breathes itself into either perpetuity or ephemerality; the respective quality of the image and the relation are diluted into something that has been destroyed (in this instance a synonym of created) to the point where it has begun to be understandable by other people.
+      <br>only at the points of relation and manner does subjectivity become relevant; for example, the distinction between a bad performance and a bad piece. this is why i label craft as a relevant term to manner. representation is the sole function of an artist, yet it is more nuanced than simply if something is well represented or not; the observer serves just as high of a role as the artist in any creation.
+      <br>this is only because of the parasitism that
+is inherent to creation. in a lecture at the 2023 Darmstädter Ferienkurse, Lachenmann proceeds to tell us, as the first participant to completely silence a small classroom, that we as artists exist as parasites, born in a world whose design we had no consent or input in. simply, how things are related, namely how they come across once the artist cedes involvement.
+      <br>craft, synthesis, simulacrum, composition, performance, imitation…</li>
+  </ul>
+
+  </body>
+</html>
