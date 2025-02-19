@@ -1,103 +1,144 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>blackburn - home</title>
-  <style>
-    body {
-      background-color: black;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-    }
-
-    .image {
-      background-size: cover;
-      background-position: center;
-      cursor: pointer;
-    }
-
-    .image:hover {
-      opacity: 0.7;
-    }
-
-    .image1 {
-      background-image: url('../pages/images/ideas.png');
-      background-repeat: repeat;
-      background-size: cover;
-      background-position: center;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .image2 {
-      background-image: url('../pages/images/writings.png');
-      background-repeat: repeat;
-      background-size: cover;
-      background-position: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-180%, -30%);
-      width: 250px;
-      height: 200px;
-      margin-right: 50px;
-    }
-
-    .image3 {
-      background-image: url('../pages/images/sounds.png');
-      background-repeat: repeat;
-      background-size: 100% 100%;
-      background-position: center;
-      position: fixed;
-      bottom: 50px;
-      right: 50px;
-      width: 300px;
-      height: 250px;
-    }
-    .text {
-      position: relative; /* Change position from absolute to relative */
-      font-family: serif;
-      font-size: 32px;
-      color: white;
-      padding: 20px;
-      z-index: 2; /* Add z-index to ensure text appears on top */
-    }
-
-  </style>
+<title>ethan blackburn :: digital space</title>
+<style>
+  body {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: "Courier New", monospace;
+    margin: 40px;
+    line-height: 1.6;
+    height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  .header {
+    margin-bottom: 60px;
+    padding-bottom: 20px;
+    width: 200px;
+  }
+  
+  .divider {
+    margin: 20px 0;
+    height: 30px;
+    position: relative;
+    width: 200px;
+  }
+  
+  .divider::before {
+    content: '[ . . . . . ]';
+    position: absolute;
+    letter-spacing: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  
+  a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+    position: absolute;
+    z-index: 2;
+  }
+  
+  a:hover {
+    opacity: 0.6;
+  }
+  
+  .left-column {
+    position: fixed;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    padding: 40px 0;
+  }
+  
+  .right-column {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #collected {
+    top: 200px;
+    left: 40px;
+  }
+  
+  #writings {
+    top: 300px;
+    left: 180px;
+  }
+  
+  #ideas {
+    top: 400px;
+    left: 80px;
+  }
+  
+  .date {
+    position: fixed;
+    bottom: 20px;
+    left: 40px;
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .random-image {
+    padding: 20px;
+  }
+  
+  .random-image img {
+    max-width: 400px;
+    height: auto;
+    opacity: 0.8;
+  }
+</style>
 </head>
+
 <body>
-  <div class="text" id="blackburnText">blæcburna!</div>
-  <div class="image image1" onclick="window.location.href='ideas.html';"></div>
-  <div class="image image2" onclick="window.location.href='writings.html';"></div>
-  <div class="image image3" onclick="window.location.href='sounds.html';"></div>
+  <div class="left-column">
+    <div class="header">
+      <h1 style="font-size: 14px; font-weight: normal;">ethan blackburn</h1>
+      <p style="font-size: 12px;">digital space :: est. 1996</p>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <a href="sounds.html" id="collected">collected efforts</a>
+    <a href="writings.html" id="writings">writings</a>
+    <a href="ideas.html" id="ideas">ideas</a>
+    
+    <div class="date">
+      last updated: 02.19.2025
+    </div>
+  </div>
+  
+  <div class="right-column">
+    <div class="random-image" id="randomImage"></div>
+  </div>
 
   <script>
-    // Function to randomly position the text element
-    function repositionText() {
-      const textElement = document.getElementById('blackburnText');
-      const maxWidth = window.innerWidth - textElement.offsetWidth - 20;
-      const maxHeight = window.innerHeight - textElement.offsetHeight - 20;
-
-      const randomX = Math.floor(Math.random() * maxWidth);
-      const randomY = Math.floor(Math.random() * maxHeight);
-
-      textElement.style.left = `${randomX}px`;
-      textElement.style.top = `${randomY}px`;
+    const images = [
+      '/api/placeholder/400/500',
+      '/api/placeholder/400/400',
+      '/api/placeholder/500/400',
+      '/api/placeholder/350/450',
+      '/api/placeholder/450/450'
+    ];
+    
+    function displayRandomImage() {
+      const randomIndex = Math.floor(Math.random() * images.length);
+      const imageContainer = document.getElementById('randomImage');
+      imageContainer.innerHTML = `<img src="${images[randomIndex]}" alt="random artwork">`;
     }
-
-    // Call the function to position the text initially
-    repositionText();
-
-    // Resize event listener to reposition the text on window resize
-    window.addEventListener('resize', repositionText);
+    
+    window.onload = displayRandomImage;
   </script>
 </body>
 </html>
