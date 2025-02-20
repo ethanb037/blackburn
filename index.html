@@ -2,189 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ars Culus</title>
+    <title>ars culus™</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            background-color: black;
-            color: white;
-            font-family: monospace;
-        }
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-        }
-        .column {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-        .text-flow {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            white-space: pre-wrap;
-            font-size: 10px;
-        }
-        .column-1 { animation: flow-1 20s linear infinite; }
-        .column-2 { animation: flow-2 15s linear infinite; }
-        .column-3 { animation: flow-3 25s linear infinite; }
-        
-        @keyframes flow-1 {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-100%); }
-        }
-        @keyframes flow-2 {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-100%); }
-        }
-        @keyframes flow-3 {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-100%); }
+        body {
+            background: white url('marble.jpg');
+            font-family: 'Times New Roman', serif;
+            margin: 20px;
+            color: black;
         }
         
-        .logo {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            z-index: 10;
-            white-space: pre;
-            font-size: 12px;
-            pointer-events: none;
-            text-shadow: 0 0 10px rgba(0,255,255,0.7), 0 0 20px rgba(255,0,255,0.7);
+        .handwritten {
+            border: 3px double black;
+            padding: 10px;
+            background: white;
+            max-width: 600px;
+            margin: 20px auto;
+            box-shadow: 8px 8px 0px #888;
         }
-
-        .menu-container {
-            position: absolute;
-            top: 65%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 11;
-        }
-
-        .menu-button {
-            background-color: transparent;
-            border: 2px solid rgba(255,255,255,0.7);
-            color: white;
-            padding: 10px 20px;
-            font-family: monospace;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        
+        .paint-button {
+            background: white;
+            border: 3px outset black;
+            padding: 5px 15px;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-shadow: 0 0 5px rgba(0,255,255,0.5), 0 0 10px rgba(255,0,255,0.5);
+            margin: 10px;
+            font-family: 'Comic Sans MS', cursive;
         }
-
-        .menu-button:hover {
-            background-color: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,1);
-            transform: scale(1.05);
+        
+        .paint-button:hover {
+            border: 3px inset black;
+            background: #EEE;
         }
-
-        .menu-button:active {
-            transform: scale(0.95);
-            background-color: rgba(255,255,255,0.1);
+        
+        .marquee {
+            width: 100%;
+            background: black;
+            color: white;
+            padding: 5px 0;
+            font-family: Arial;
         }
-
-        /* Vibrant Chromatic Aberration Effect */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(
-                45deg, 
-                rgba(255, 0, 0, 0.3) 0%, 
-                rgba(0, 255, 0, 0.3) 50%, 
-                rgba(0, 0, 255, 0.3) 100%
-            );
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: color-dodge;
-            animation: chromatic-shift 2s infinite alternate;
-            opacity: 0.5;
-        }
-
-        @keyframes chromatic-shift {
-            0% {
-                transform: translate(-5px, -5px) scale(1.01);
-                filter: hue-rotate(0deg);
-            }
-            100% {
-                transform: translate(5px, 5px) scale(1.02);
-                filter: hue-rotate(60deg);
-            }
-        }
-
-        /* Bright Hidden Easter Egg Styling */
-        .hidden-text {
-            position: absolute;
-            color: rgba(255,255,255,0.3);
-            text-shadow: 0 0 5px rgba(0,255,255,0.5), 0 0 10px rgba(255,0,255,0.5);
-            font-size: 8px;
-            pointer-events: none;
-            user-select: none;
-            z-index: 5;
-            animation: glitch 1s infinite alternate;
-        }
-
-        @keyframes glitch {
-            0% {
-                transform: translate(0);
-                opacity: 0.3;
-            }
-            50% {
-                transform: translate(-2px, 2px);
-                opacity: 0.5;
-            }
-            100% {
-                transform: translate(2px, -2px);
-                opacity: 0.7;
-            }
-        }
-
-        /* Additional color and brightness for text flows */
-        .text-flow {
-            text-shadow: 0 0 5px rgba(0,255,255,0.5), 0 0 10px rgba(255,0,255,0.5);
-            color: rgba(255,255,255,0.9);
+        
+        .disclaimer {
+            font-size: 9px;
+            color: #666;
+            border-top: 1px dashed black;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-    <div class="logo">
- █████╗ ██████╗ ███████╗
-██╔══██╗██╔══██╗██╔════╝
-███████║██████╔╝███████╗
-██╔══██║██╔══██╗╚════██║
-██║  ██║██║  ██║███████║
-╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+    <!-- Simulated GeoCities-style background -->
+    <div style="position:fixed; top:0; left:0; z-index:-1">
+        <img src="marble.gif" width="50" height="50">
+    </div>
 
- ██████╗██╗   ██╗██╗     ██╗   ██╗███████╗
-██╔════╝██║   ██║██║     ██║   ██║██╔════╝
-██║     ██║   ██║██║     ██║   ██║███████╗
-██║     ██║   ██║██║     ██║   ██║╚════██║
-╚██████╗╚██████╔╝███████╗╚██████╔╝███████║
- ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝
-    </div>
-    <div class="menu-container">
-        <button id="menu-button" class="menu-button">
-            MENU
-        </button>
-    </div>
-    <div class="container">
-        <div class="column column-1">
-            <div class="text-flow">
-                ars culus seeks a site of incubation; where an active community of artists of all disciplines from many places make many kinds of things in the same space. We are a collaboration that does not end at simply two of us. As art workers, we are impelled to inhabit a space that is made up of many different art workers, dignified in their own mimetic responsibilities, and in pursuit of that which is unspeakably bigger than all of us. 
+    <center>
+        <img src="under_construction.gif" alt="">
+        <h1 style="text-shadow: 3px 3px 0px #CCC">ars culus<br>⛪𒀱⚰</h1>
+        
+        <div class="handwritten">
+            <p><em>"hot air balloon tour agency disguised as an art collective"</em></p>
+            <marquee behavior="scroll" direction="left">is a hot air balloon tour agency masquerading as an art collective that is pretending to be a funk/pop duo in the 70s imagining what music would sound like in 2019 which is an auspicious year for them because they were recently expelled from Brazil that is primarily composed of V Noel and Ethan Blackburn, who use sound as a vice to enter(tain) others because most recently they showcased a week-long artistic takeover in a curious bookstore in Maastricht as well as many rituals composed of smaller rituals to show that. 
+</marquee>
+        </div>
+
+        <!-- Main navigation -->
+        <br>
+        <button class="paint-button" onclick="location.href='pages/ethan.html'">ETHAN</button>
+        <button class="paint-button" onclick="location.href='pages/noel.html'">NOEL</button>
+        
+        <!-- "Deep" manifesto -->
+        <div class="handwritten" style="margin-top:30px; transform: rotate(-1deg)">
+            <textarea rows="10" cols="50" style="background:url('marble.gif'); border:2px groove black; font-family:Courier">
+            ╔════════════════════════════════╗
+            ║   ars culus METHODOLOGY        ║
+            ║               ║
+            ╚════════════════════════════════╝
+            
+            The ritual begins when you:
+            1. Reject binary oppositions
+            2. Install our toolbar
+            3. Fax your signature
+            4. Breathe into the monitor
+
+
+		    now.
+
 diktat of the art worker.
 	the art worker… 
 1. shall create.
@@ -200,178 +104,108 @@ diktat of the art worker.
 11. is of every one.
 12. shall love.
 
-            </div>
+Ars culus sends its two favourite art workers out in Maastricht to spread joyous news of a universal freedom to create. 
+
+worker Ethan Blackburn is an American sound artist centered on visual communications between art and artist. With his experience as a musician, he aims to engage with sound and space through social contexts as noise.  
+
+worker V Noel, hailing from India, proposes therapeutic effects of community art experiences. He facilitates active audience performances that ask for help in completing the experience. 
+
+They are here to claim a joyous news of a universal right to create.
+
+
+
+		    
+		How things endure? 
+		How things begin? 
+		How absence speaks? 
+		How habits know themself?
+		 How does the radio know when you're finally learning the lyrics? 
+		How does an unnoticed maintain its membership?
+		 How does a key know its teeth? 
+		How does the shelf know its edge? 
+		How does the hook carry itself? 
+		how can coming come? how sitting sits? 
+		how does melting melts melted? 
+		How might a wall count its cracks? 
+		How does a door know the impatient? 
+		How when a word book refuses to contain containing which it promised to contain? 
+		How will do I close covers? How do I read upside down? 
+		How might a clock, a streetlight?
+		 How do I say something without repeating anyone else? 
+		How will repetition hold me? 
+		How will others know me? 
+		How is it possible that certain objects or places appear, over extended observation, to cultivate a richness, significance and an almost animate presence as the possibility for meaningful human interaction, to those same observers, slowly and increasingly disappear and turns instead towards zero?
+		How if meaning decides to take an unauthorized vacation from its meaning-duties?
+		How do inanimate people remain living? 
+		How do I read lips? 
+		How to make without thinking? 
+		How weight grounds? 
+		How to know noise? 
+		How to distinguish approach of realization? 
+		How do I know absence? 
+		How when numbers number a little too much and start to letter? 
+		How are moments linked together? 
+		How to grow without knowing? 
+		How a child and his dog? 
+		How will feeling be felt?
+		 How will things change once they’re understood as over? 
+		How when color refuses to maintain its chromatic responsibilities? 
+		When volume asserts loud to wide and wide to loud confusing its cubic sense of self with a probable disconnected sense of spatial significance, but that they may never meet and be known as occupations of two different sized spaces to another?
+		 How if Sunday doesn’t show proper affection to Monday? 
+		How when four birds are precisely not four but also not quite three?
+		 How when they never were over? 
+		How when this necessitates the absence of birthed and repressed sentiment to be privatized in your own language before you recall its significance at the end of this sentence? 
+		How if an alphabet reputes itself without consulting proper alphabetical authority? 
+		How light remembers? How does structure structure structurally structuring structured structures? 
+		How endings begin? 
+		How to fragment a unity?
+		 How when collecting embarks on training to assert itself as a lifestyle, but targets the wrong verbal audience? 
+		How to hear silent now? 
+		How a line can curve?
+		 How a wind can move?
+		 How redness is how it is? 
+		How to make is doing to be but how to approach?
+		How it will be, when it is how to see, when is how now gone here when so much nothing to become? 
+		How to touch without touching? 
+		How to face and facing? 
+
+		    
+why are we motivated?:
+We want to tell people that there is more than one way of knowing.
+Ars Culus Is a collectism-driven enterprise that covers themes of relativistic politics in the consumed. 
+To simplify, we assemble to disseminate paradoxical paradigms that catalyze statistical convergence towards symbiotic synergy.
+As in, we want to question why is something art or not.
+
+
+		    
+            </textarea>
         </div>
-        <div class="column column-2">
-            <div class="text-flow">
-                We are not motivated by the desire to 'present works to the public'; we are interested rather in researching the aspects of communication that let us instead make and finish a piece with the audience. Jan van Eyck applies then the most important capabilities for our continuing research— a facility of budding art workers, facilities such as the printing lab to support our visual documentation through periodical zines and instructions (such as scores), and the most important facility of a place to enact our processional practices.
-is a hot air balloon tour agency masquerading as an art collective that is pretending to be a funk/pop duo in the 70s imagining what music would sound like in 2019 which is an auspicious year for them because they were recently expelled from Brazil that is primarily composed of V Noel and Ethan Blackburn, who use sound as a vice to enter(tain) others because most recently they showcased a week-long artistic takeover in a curious bookstore in Maastricht as well as many rituals composed of smaller rituals to show that. 
 
-
-
-@e.blckbrn
-@boo_op
-@arsculus
-
-
-
-How things endure? 
-How things begin? 
-How absence speaks? 
-How habits know themself?
- How does the radio know when you're finally learning the lyrics? 
-How does an unnoticed maintain its membership?
- How does a key know its teeth? 
-How does the shelf know its edge? 
-How does the hook carry itself? 
-how can coming come? how sitting sits? 
-how does melting melts melted? 
-How might a wall count its cracks? 
-How does a door know the impatient? 
-How when a word book refuses to contain containing which it promised to contain? 
-How will do I close covers? How do I read upside down? 
-How might a clock, a streetlight?
- How do I say something without repeating anyone else? 
-How will repetition hold me? 
-How will others know me? 
-How is it possible that certain objects or places appear, over extended observation, to cultivate a richness, significance and an almost animate presence as the possibility for meaningful human interaction, to those same observers, slowly and increasingly disappear and turns instead towards zero?
-How if meaning decides to take an unauthorized vacation from its meaning-duties?
-How do inanimate people remain living? 
-How do I read lips? 
-How to make without thinking? 
-How weight grounds? 
-How to know noise? 
-How to distinguish approach of realization? 
-How do I know absence? 
-How when numbers number a little too much and start to letter? 
-How are moments linked together? 
-How to grow without knowing? 
-How a child and his dog? 
-How will feeling be felt?
- How will things change once they’re understood as over? 
-How when color refuses to maintain its chromatic responsibilities? 
-When volume asserts loud to wide and wide to loud confusing its cubic sense of self with a probable disconnected sense of spatial significance, but that they may never meet and be known as occupations of two different sized spaces to another?
- How if Sunday doesn’t show proper affection to Monday? 
-How when four birds are precisely not four but also not quite three?
- How when they never were over? 
-How when this necessitates the absence of birthed and repressed sentiment to be privatized in your own language before you recall its significance at the end of this sentence? 
-How if an alphabet reputes itself without consulting proper alphabetical authority? 
-How light remembers? How does structure structure structurally structuring structured structures? 
-How endings begin? 
-How to fragment a unity?
- How when collecting embarks on training to assert itself as a lifestyle, but targets the wrong verbal audience? 
-How to hear silent now? 
-How a line can curve?
- How a wind can move?
- How redness is how it is? 
-How to make is doing to be but how to approach?
-How it will be, when it is how to see, when is how now gone here when so much nothing to become? 
-How to touch without touching? 
-How to face and facing? 
-            </div>
+        <!-- Mock academic endorsement -->
+        <div style="border-left:10px solid black; padding-left:10px; margin:30px">
+            <p>"Ars Culus represents the pinnacle of applied phenomenology. basically, we mean"<br>
+            <img src="spacer.gif" width="10" height="10">
+            - <a href="#" style="color:blue; text-decoration:none">Dr. M.B.S. Johnson</a><br>
+            <font size="1">(Journal of Neo-Anachronistic Studies, 1997)</font></p>
         </div>
-        <div class="column column-3">
-            <div class="text-flow">
-                We want to tell people that there is more than one way of knowing. Ars Culus Is a collectism-driven enterprise that covers themes of relativistic politics in the consumed. To simplify, we assemble to disseminate paradoxical paradigms that catalyze statistical convergence towards symbiotic synergy. For You, The One Who’s Already Half-Made of Everything:
+    </center>
 
-
-
-
-Penance is a sacrifice. 
-It allows the mind to surrender after flailing around to be all that it believes it is. The measurements of a ritual is in a similar quantity. 
-- The ancients believed in chants. 
-- These chants had fire sometimes.
-- The fire had power sometimes.
-
-We submit to the gods of assurity, of confirmations to establish a connect with a higher entity, all while beguiled to smithereens about the entirety. 
-The term ritual, though appearing as a binary that would suggest the (NOT)ritual, is bereft of significance by the utter lack of requirements to survive therein.
-A pilgrimage is the accruing of interest in the divine, the mother of tourism even— undoubtedly of artistry.
-- A statue of a distant lands serves regular salutations to oblivion. 
-
-
-The sole ritual is that of creating music for music, as a surrender to the desire to impose/impress/introduce what belief(s) is(are) ours. 
--A ritual is a knitted ladder that carries the desire of a certain direction, unaware of time, existing beyond good nor evil.
-Ars Culus makes a detour to the surrender into continuous medium immersion as pilgrimage. 
-The act of sharing is the meagre, blessed sweet morsels distributed. The commitment to serve is paramount in this concert. We don't accept the binary presentation as a duality, though obvious it may seem. 
-The presentation, across all mediums, will be presented as a singularity. One thing is only but a temporal distortion of another. The ritual, the penance, the pilgrimage is the only service Ars Culus can provide to the current situation. A ritual serves a quasi purpose to most, and we mean to objectively parade the act of generating music, to exist, to create nothing and everything… but never to deter any prominence away from the very ritual of living; the very ritual of breathing; the very ritual of pretending; the very ritualistic act of conviction itself. 
-
-
-______________________________________
-
-“ars culus embarks on a ritual composed of many smaller rituals (in a quest) to enter(tain) others.”
-
-To begin, picture a space of performance, now on referred to as the stage. 
-It is thus; the separation of two music workers, isolated from another on said stage with a solid divider in between, each with a piano and a table for refreshments and electronics, and a bed for reclination and rest. Importantly, each Ritualgeber is engaged with the saprogenic task of being completely isolated from another; musically, socially, existentially. 
-
-The nature of the presentation is the composite of two individual performances that evolve in time, over a course of Three days, nonstop. The 72 hours will be submitted at the altar of Music. Ars Culus will be at the craft of creating.. duration-bound, creating to share, living in the space kindly provided by you truly. 
-Continuously, for these 72 hours, three days, we will live at the performance space, stream, eat on the table with our laptops, sleep on a foldable bed, generate visuals, and importantly deliver a performance so free of typical onanistic performance pretense due to the fact that we stand in between the front-region and back region of the audience; that we exist honestly and causally. Our cause is to expose boundaries;
-- the boundary physical between us, 
-- the boundary between ritual and everyday practice,
-- the boundary between performer and listener, 
-- the boundary between solidarity and inaction,
-- the boundary between you and me,
-to bring back every atavistic idea of performance and simultaneously disable them… that rituals do not necessarily begin with intent but qua circumstance.  
-Visuals accompany us from behind, produced live. A camera streams our minute actions, rituals, and displays them with credulity for physical and parasocial audiences. Our basic needs will be fulfilled by small intervallic breaks and assistants to provide us sustenance. The rest lies in you.
-
-
-What makes our project unique and important in today's world?
-The world operates in a performance we refuse to acknowledge. When we attempt to traverse this through perceived/intended artistic expression, we admit we give to the world only copies, imitations of reality. How do we transgress this voile we permit ourselves to, without compromising the integrity of the mundane? We, ars culus, declare our existence not exclusive to stages, thereby transmuting the same ritualistic significance of the stage as to our morning ritual of bathing and consuming coffee through penance. Other art collectives underpinned by a secondary trajectory attempt to subjugate messages but fall short at admitting the unnatural temporality of their performance, whether by choosing to end with applause or playing for 4 minutes on an iceberg for Greenpeace. Why are we important? We acknowledge that our hopefully despondent exhibition of our creed and the banal search for it, is our only possible method of existence. All that is left is to display the call for our penance. 
-
-
-
-
-
-When we are given a space to perform, we extend that space to others. Ars Culus presents a 72-hour durational performance that challenges conventional notions of performance and art. We are naturally immersed and imputed by exclusive spaces, exclusionary clauses, into the spread of misinformation. People are aware of the ingenuousness of any persons hiding behind their performance. Through a continuous (of at least 24 -  36 hours) performance, we elevate the mundanity of engaging with others in a public space into spectacle, questioning the role of intent and authenticity in art, and questioning how information is interpreted through interaction and its broadcast (through a continuous YouTube stream of the performance). This experimental work invites audiences to reconsider the boundaries of performance and indulge in the power of community in the artistic process.
-
-
-            </div>
-        </div>
+    <!-- Retro footer -->
+    <div class="disclaimer">
+        <center>
+            <img src="divider.gif">
+            <p><br>
+            Requires Macromedia Shockwave® plugin<br>
+		    <br>
+        </center>
     </div>
-    <script>
-        function duplicateText() {
-            const columns = document.querySelectorAll('.text-flow');
-            columns.forEach(column => {
-                const content = column.textContent;
-                column.innerHTML = '';
-                for (let i = 0; i < 20; i++) {
-                    const span = document.createElement('span');
-                    span.textContent = content + ' ';
-                    column.appendChild(span);
-                }
-            });
-        }
 
-        function addHiddenEasterEggs() {
-            const columns = document.querySelectorAll('.column');
-            const easterEggs = [
-                "something is watching",
-                "do not look behind you",
-                "they are listening",
-                "silence grows louder",
-                "the walls breathe quietly"
-            ];
-
-            columns.forEach(column => {
-                easterEggs.forEach(egg => {
-                    const hiddenText = document.createElement('div');
-                    hiddenText.classList.add('hidden-text');
-                    hiddenText.style.top = `${Math.random() * 100}%`;
-                    hiddenText.style.left = `${Math.random() * 100}%`;
-                    hiddenText.style.transform = `rotate(${Math.random() * 360}deg)`;
-                    hiddenText.textContent = egg;
-                    column.appendChild(hiddenText);
-                });
-            });
-        }
-
-        duplicateText();
-        addHiddenEasterEggs();
-
-        // Menu button functionality
-        const menuButton = document.getElementById('menu-button');
-        menuButton.addEventListener('click', () => {
-            window.location.href = 'pages/ethan.html';
-        });
-    </script>
+    <!-- Hidden relic elements -->
+    <div style="display:none">
+        <!-- Simulated 90s tracking pixel -->
+        <img src="log_visitor.cgi?ref=geocities">
+        <!-- Abandoned VRML prototype -->
+        <embed src="arsculus.wrl" width="0" height="0">
+    </div>
 </body>
 </html>
