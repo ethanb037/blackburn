@@ -1,4 +1,196 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V Noel - Multidisciplinary Creator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      cursor: default;
+      user-select: none;
+      min-height: 100vh;
+      width: 100%;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .floating-box, .video-box {
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .floating-box {
+      position: absolute;
+      background-color: black;
+      border: 2px solid white;
+      border-radius: 3px;
+      padding: 20px;
+      max-width: 300px;
+      cursor: move;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .floating-box:hover {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      border: 2px solid #f0f0f0;
+      z-index: 1000 !important;
+    }
+
+    .floating-box h1, .floating-box h2 {
+      margin-top: 0;
+      font-weight: normal;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .floating-box p {
+      line-height: 1.5;
+      margin-bottom: 0;
+    }
+
+    .video-box {
+      position: absolute;
+      background-color: black;
+      border: 2px solid white;
+      border-radius: 3px;
+      cursor: move;
+      overflow: hidden;
+      padding: 0;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .video-box:hover {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+      border: 2px solid #f0f0f0;
+      z-index: 1000 !important;
+    }
+
+    .video-box iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1IiBkPSJNMCAwaDMwMHYzMDBIMHoiLz48L3N2Zz4=');
+      pointer-events: none;
+      opacity: 0.5;
+      z-index: 9999;
+    }
+
+    .background-text {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+      border-bottom: 1px dotted white;
+    }
+
+    a:hover {
+      background-color: white;
+      color: black;
+    }
+
+    .drag-handle {
+      width: 100%;
+      height: 15px;
+      cursor: move;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="background-text" id="backgroundText"></div>
+
+  <!-- Content boxes -->
+  <div class="floating-box" style="top: 60px; left: 60px; z-index: 10;">
+    <h1>V Noel</h1>
+    <p>Multidisciplinary Creator</p>
+    <p>1994<br>JameshedPur, IN → Bengaluru, IN ↔ Maastricht, NL</p>
+  </div>
+
+  <div class="floating-box" style="top: 80px; left: 450px; z-index: 11;">
+    <h2>About</h2>
+    <p>V Noel is a multidisciplinary creator.</p>
+  </div>
+
+  <div class="floating-box" style="top: 300px; left: 150px; z-index: 12;">
+    <p>His post-colonial sound identity explores universal expressions of urban phenomenon.</p>
+  </div>
+
+  <div class="floating-box" style="top: 380px; left: 550px; z-index: 13;">
+    <p>His primary expression lies in presenting the anthropological authenticity in socio-political contradictions.</p>
+  </div>
+
+  <div class="floating-box" style="top: 180px; left: 830px; z-index: 14;">
+    <p>He focuses on the tension between tradition and familiarity.</p>
+  </div>
+
+  <div class="floating-box" style="top: 550px; left: 280px; z-index: 15;">
+    <p>Coming from a diverse background, he has studied physics, computation, and music therapy & education.</p>
+  </div>
+
+  <div class="floating-box" style="top: 480px; left: 680px; z-index: 16;">
+    <p>He is currently studying composition with Vykintas Baltakas at the Conservatorium Maastricht.</p>
+  </div>
+
+  <div class="floating-box" style="top: 80px; left: 800px; z-index: 17;">
+    <h2>Contact</h2>
+    <p>For collaborations or inquiries, reach out at <a href="mailto:your.email@example.com">your.email@example.com</a>.</p>
+  </div>
+
+  <!-- Video boxes -->
+  <div class="video-box" style="top: 190px; left: 280px; width: 380px; height: 215px; z-index: 5;">
+    <iframe src="https://www.youtube.com/embed/wbQ0z_7YfFc" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="video-box" style="top: 420px; left: 60px; width: 380px; height: 215px; z-index: 6;">
+    <iframe src="https://www.youtube.com/embed/aTSHp2jDX40" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="video-box" style="top: 220px; left: 700px; width: 380px; height: 215px; z-index: 7;">
+    <iframe src="https://www.youtube.com/embed/wIxh1KUAoGM" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="video-box" style="top: 650px; left: 100px; width: 380px; height: 215px; z-index: 8;">
+    <iframe src="https://www.youtube.com/embed/aZ8ExAYxsjg" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="video-box" style="top: 650px; left: 550px; width: 380px; height: 215px; z-index: 9;">
+    <iframe src="https://www.youtube.com/embed/LqsRwxWiBYI" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <script>
     // Generate background text
     const backgroundTexts = [
       "post-colonial", "urban", "contradiction", "tradition", 
@@ -84,3 +276,5 @@
       currentElement = null;
     }
   </script>
+</body>
+</html>
