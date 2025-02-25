@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethan blackburn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f8f8f8;
+            color: #222;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            cursor: default;
+        }
+        
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .word {
+            position: absolute;
+            transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            cursor: move;
+            padding: 2px;
+            border-radius: 2px;
+            user-select: none;
+            will-change: transform;
+            font-size: 17px;
+            line-height: 1.3;
+        }
+        
+        .word:hover {
+            color: #000;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .word.dragging {
+            z-index: 1000;
+            opacity: 0.9;
+            color: #000;
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+        
+        .word.title {
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #222;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background-color: #222;
+            color: #f8f8f8;
+        }
+        
+        .intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 1s ease;
+        }
+        
+        .intro h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: normal;
+        }
+        
+        .intro p {
+            font-size: 16px;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .start-btn {
+            padding: 8px 20px;
+            border: 1px solid #222;
+            background: transparent;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .start-btn:hover {
+            background-color: #222;
+            color: #f8f8f8;
+        }
+        
+        @media (max-width: 768px) {
+            .word {
+                font-size: 15px;
+            }
+            
+            .word.title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="intro" id="intro">
+        <h3>ethan blackburn</h3>
+        <p>drag words to recreate this bio</p>
+        <button class="start-btn" id="startBtn">begin</button>
+    </div>
+
+    <div class="container" id="container"></div>
+    
+    <div class="controls">
+        <button class="control-btn" id="resetBtn">↺</button>
+        <button class="control-btn" id="randomBtn">⟳</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const intro = document.getElementById('intro');
+            const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const randomBtn = document.getElementById('randomBtn');
+            
+            // Bio text
+            const bioText = `Ethan Blackburn is an American art worker and composer centered on types of communication between art and artist. In his work, he engages with sound and space through social contexts as noise. In addition to being a composer, Ethan is an active member of several artistic collectives within Europe, as a founding member of Netherlands-based collective Ars Culus and pianist/instrumentalist in European Music Collective, performing across Europe exploring social dynamics and communal conversations in improvisational musics, as well as being an award-winning artistic writer/researcher in the field of composition and affect. Blackburn has worked with such ensembles as Ensemble Hopper, Icarus vs. Muzak, St. Petersburg State Symphony Orchestra, Brightwork newmusic, and ContemPLAY ensemble, and has participated in masterclasses and studies with composers such as Anthony Braxton, Vykintas Baltakas, Pierluigi Billone, Mark Andre, Dai Fujikura, and Klaus Lang.`;
+            
+            // Split text into words
+            const words = bioText.split(/\s+/);
+            
+            // Special words to highlight
+            const titleWords = ['Ethan', 'Blackburn', 'worker', 'composer', 'sound', 'space', 'noise', 'Europe', 'music', 'art'];
+            
+            // Create elements for each word
+            let wordElements = [];
+            
+            // Function to create word elements
+            function createWordElements() {
+                container.innerHTML = '';
+                wordElements = [];
+                
+                words.forEach((word, index) => {
+                    const wordEl = document.createElement('div');
+                    wordEl.className = 'word';
+                    wordEl.textContent = word;
+                    wordEl.dataset.index = index;
+                    
+                    // Check if this is a special word
+                    if (titleWords.some(titleWord => word.includes(titleWord))) {
+                        wordEl.classList.add('title');
+                    }
+                    
+                    wordEl.addEventListener('mousedown', startDrag);
+                    wordEl.addEventListener('touchstart', startDrag, { passive: false });
+                    
+                    container.appendChild(wordEl);
+                    wordElements.push(wordEl);
+                });
+            }
+            
+            // Function to position words in a layout
+            function positionWordsInLayout(layout) {
+                const containerRect = container.getBoundingClientRect();
+                
+                if (layout === 'grid') {
+                    // Grid layout
+                    const cols = Math.ceil(Math.sqrt(words.length));
+                    const rows = Math.ceil(words.length / cols);
+                    
+                    const cellWidth = containerRect.width / cols;
+                    const cellHeight = containerRect.height / rows;
+                    
+                    wordElements.forEach((wordEl, index) => {
+                        const row = Math.floor(index / cols);
+                        const col = index % cols;
+                        
+                        const x = col * cellWidth + (cellWidth - wordEl.offsetWidth) / 2;
+                        const y = row * cellHeight + (cellHeight - wordEl.offsetHeight) / 2;
+                        
+                        wordEl.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+                } else if (layout === 'random') {
+                    // Random layout
+                    wordElements.forEach((wordEl) => {
+                        const padding = 40;
+                        const x = padding + Math.random() * (containerRect.width - wordEl.offsetWidth - padding * 2);
+                        const y = padding + Math.random() * (containerRect.height - wordEl.offsetHeight - padding * 2);
+                        
+                        wordEl.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+                } else if (layout === 'center') {
+                    // Centered paragraph layout
+                    const lineHeight = 28;
+                    const maxWidth = Math.min(600, containerRect.width - 80);
+                    let currentLine = 0;
+                    let currentX = (containerRect.width - maxWidth) / 2;
+                    const startY = (containerRect.height - (lineHeight * Math.ceil(words.length / (maxWidth / 100)))) / 2;
+                    
+                    let lineWords = [];
+                    let lineWidth = 0;
+                    
+                    wordElements.forEach((wordEl, index) => {
+                        const wordWidth = wordEl.offsetWidth + 8; // Add spacing
+                        
+                        if (lineWidth + wordWidth > maxWidth && lineWords.length > 0) {
+                            // Position words in the current line
+                            const lineStart = (containerRect.width - lineWidth) / 2;
+                            let xPos = lineStart;
+                            
+                            lineWords.forEach(w => {
+                                w.style.transform = `translate(${xPos}px, ${startY + currentLine * lineHeight}px)`;
+                                xPos += w.offsetWidth + 8;
+                            });
+                            
+                            // Reset for next line
+                            lineWords = [];
+                            lineWidth = 0;
+                            currentLine++;
+                        }
+                        
+                        lineWidth += wordWidth;
+                        lineWords.push(wordEl);
+                        
+                        // Handle last line
+                        if (index === wordElements.length - 1) {
+                            const lineStart = (containerRect.width - lineWidth) / 2;
+                            let xPos = lineStart;
+                            
+                            lineWords.forEach(w => {
+                                w.style.transform = `translate(${xPos}px, ${startY + currentLine * lineHeight}px)`;
+                                xPos += w.offsetWidth + 8;
+                            });
+                        }
+                    });
+                }
+            }
+            
+            // Start the dragging process
+            function startDrag(e) {
+                e.preventDefault();
+                
+                const wordEl = this;
+                wordEl.classList.add('dragging');
+                
+                const initialX = e.clientX || e.touches[0].clientX;
+                const initialY = e.clientY || e.touches[0].clientY;
+                
+                // Get the current transform values
+                const transform = wordEl.style.transform;
+                let translateX = 0;
+                let translateY = 0;
+                
+                if (transform && transform.includes('translate')) {
+                    const match = transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)/);
+                    if (match) {
+                        translateX = parseFloat(match[1]);
+                        translateY = parseFloat(match[2]);
+                    }
+                }
+                
+                // Set up move and end events
+                function moveWord(e) {
+                    const currentX = e.clientX || e.touches[0].clientX;
+                    const currentY = e.clientY || e.touches[0].clientY;
+                    
+                    const deltaX = currentX - initialX;
+                    const deltaY = currentY - initialY;
+                    
+                    wordEl.style.transform = `translate(${translateX + deltaX}px, ${translateY + deltaY}px)`;
+                }
+                
+                function stopDrag() {
+                    wordEl.classList.remove('dragging');
+                    document.removeEventListener('mousemove', moveWord);
+                    document.removeEventListener('mouseup', stopDrag);
+                    document.removeEventListener('touchmove', moveWord);
+                    document.removeEventListener('touchend', stopDrag);
+                }
+                
+                document.addEventListener('mousemove', moveWord);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', moveWord, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            }
+            
+            // Initialize
+            startBtn.addEventListener('click', () => {
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    createWordElements();
+                    
+                    // Wait for elements to be created and rendered
+                    setTimeout(() => {
+                        positionWordsInLayout('center');
+                    }, 100);
+                }, 1000);
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', () => {
+                positionWordsInLayout('center');
+            });
+            
+            // Random button
+            randomBtn.addEventListener('click', () => {
+                positionWordsInLayout('random');
+            });
+            
+            // Handle window resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    positionWordsInLayout('center');
+                }, 200);
+            });
+            
+            // Easter egg: Double-click to make words float
+            container.addEventListener('dblclick', (e) => {
+                if (e.target.classList.contains('word')) {
+                    const wordEl = e.target;
+                    
+                    // Add floating animation
+                    wordEl.style.transition = 'transform 10s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                    
+                    const randomX = Math.random() * (window.innerWidth - 100);
+                    const randomY = Math.random() * (window.innerHeight - 100);
+                    
+                    wordEl.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                    
+                    // Reset transition after animation
+                    setTimeout(() => {
+                        wordEl.style.transition = 'transform 0.4s cubic-bezier(0.19, 1, 0.22, 1)';
+                    }, 10000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
