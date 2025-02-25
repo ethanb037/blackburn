@@ -1,4 +1,86 @@
-<!DOCTYPE html>
-<html>
-    <h1>wait a minute, da. something is on the way.</h1>
-</html>
+<script>
+    // Generate background text
+    const backgroundTexts = [
+      "post-colonial", "urban", "contradiction", "tradition", 
+      "familiarity", "anthropological", "authenticity", 
+      "sound identity", "multidisciplinary", "phenomenon"
+    ];
+    
+    const textContainer = document.getElementById("backgroundText");
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    for (let i = 0; i < 500; i++) {
+      const text = document.createElement("div");
+      text.style.position = "absolute";
+      text.style.left = Math.random() * screenWidth + "px";
+      text.style.top = Math.random() * screenHeight + "px";
+      text.style.transform = `rotate(${Math.random() * 360}deg)`;
+      text.textContent = backgroundTexts[Math.floor(Math.random() * backgroundTexts.length)];
+      textContainer.appendChild(text);
+    }
+    
+    // Make boxes draggable
+    const draggableElements = document.querySelectorAll('.floating-box, .video-box');
+    let isDragging = false;
+    let currentElement = null;
+    let offsetX, offsetY;
+    
+    draggableElements.forEach(element => {
+      element.addEventListener('mousedown', startDrag);
+      element.addEventListener('touchstart', startDragTouch, { passive: false });
+    });
+    
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', dragTouch, { passive: false });
+    document.addEventListener('mouseup', stopDrag);
+    document.addEventListener('touchend', stopDrag);
+    
+    function startDrag(e) {
+      isDragging = true;
+      currentElement = this;
+      
+      // Bring to front
+      const maxZ = Math.max(...Array.from(draggableElements).map(el => parseInt(el.style.zIndex || 0)));
+      currentElement.style.zIndex = maxZ + 1;
+      
+      offsetX = e.clientX - currentElement.getBoundingClientRect().left;
+      offsetY = e.clientY - currentElement.getBoundingClientRect().top;
+    }
+    
+    function startDragTouch(e) {
+      e.preventDefault();
+      isDragging = true;
+      currentElement = this;
+      
+      // Bring to front
+      const maxZ = Math.max(...Array.from(draggableElements).map(el => parseInt(el.style.zIndex || 0)));
+      currentElement.style.zIndex = maxZ + 1;
+      
+      const touch = e.touches[0];
+      offsetX = touch.clientX - currentElement.getBoundingClientRect().left;
+      offsetY = touch.clientY - currentElement.getBoundingClientRect().top;
+    }
+    
+    function drag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      currentElement.style.left = (e.clientX - offsetX) + 'px';
+      currentElement.style.top = (e.clientY - offsetY) + 'px';
+    }
+    
+    function dragTouch(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      
+      const touch = e.touches[0];
+      currentElement.style.left = (touch.clientX - offsetX) + 'px';
+      currentElement.style.top = (touch.clientY - offsetY) + 'px';
+    }
+    
+    function stopDrag() {
+      isDragging = false;
+      currentElement = null;
+    }
+  </script>
