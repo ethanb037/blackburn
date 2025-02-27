@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ars Culus Ritual</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: monospace;
+        }
+        canvas {
+            display: block;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px black;
+        }
+        #timer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #ff3333;
+            font-size: 20px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">ARS CULUS - RITUAL PENANCE PILGRIMAGE</div>
+    <div id="timer">00:00:00 / 72:00:00</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+
+<script>
+// Scene setup
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+scene.fog = new THREE.FogExp2(0x000000, 0.0025);
+
+// Camera setup
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 15);
+
+// Renderer setup
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// Lighting
+// Main ambient light
+const ambientLight = new THREE.AmbientLight(0x222222);
+scene.add(ambientLight);
+
+// Warm light from the left representing one performer
+const leftLight = new THREE.PointLight(0xff6633, 1, 30);
+leftLight.position.set(-5, 5, 5);
+leftLight.castShadow = true;
+leftLight.shadow.mapSize.width = 2048;
+leftLight.shadow.mapSize.height = 2048;
+scene.add(leftLight);
+
+// Cool light from the right representing the other performer
+const rightLight = new THREE.PointLight(0x3366ff, 1, 30);
+rightLight.position.set(5, 5, 5);
+rightLight.castShadow = true;
+rightLight.shadow.mapSize.width = 2048;
+rightLight.shadow.mapSize.height = 2048;
+scene.add(rightLight);
+
+// Flickering fire light in the center
+const fireLight = new THREE.PointLight(0xff9900, 1.5, 20);
+fireLight.position.set(0, 1, 0);
+fireLight.castShadow = true;
+scene.add(fireLight);
+
+// Performance space - the stage
+const stageGeometry = new THREE.BoxGeometry(20, 0.5, 10);
+const stageMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
+const stage = new THREE.Mesh(stageGeometry, stageMaterial);
+stage.position.y = -0.25;
+stage.receiveShadow = true;
+scene.add(stage);
+
+// Divider between performers
+const dividerGeometry = new THREE.BoxGeometry(0.5, 4, 8);
+const dividerMaterial = new THREE.MeshPhongMaterial({ 
+    color: 0x222222,
+    transparent: true,
+    opacity: 0.7 
+});
+const divider = new THREE.Mesh(dividerGeometry, dividerMaterial);
+divider.position.y = 2;
+divider.castShadow = true;
+scene.add(divider);
+
+// Create pianos
+function createPiano(posX) {
+    const pianoGroup = new THREE.Group();
+    
+    // Piano body
+    const bodyGeometry = new THREE.BoxGeometry(3, 1, 1.5);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x111111 });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.castShadow = true;
+    pianoGroup.add(body);
+    
+    // Piano keys
+    const whiteKeyGeometry = new THREE.BoxGeometry(0.2, 0.1, 0.6);
+    const whiteKeyMaterial = new THREE.MeshPhongMaterial({ color: 0xeeeeee });
+    const blackKeyGeometry = new THREE.BoxGeometry(0.12, 0.15, 0.4);
+    const blackKeyMaterial = new THREE.MeshPhongMaterial({ color: 0x111111 });
+    
+    const keyPattern = [true, false, true, false, true, true, false, true, false, true, false, true];
+    for (let i = 0; i < 12; i++) {
+        const xPos = -1.2 + (i * 0.2);
+        if (keyPattern[i]) {
+            // White key
+            const key = new THREE.Mesh(whiteKeyGeometry, whiteKeyMaterial);
+            key.position.set(xPos, 0.55, 0.3);
+            key.castShadow = true;
+            pianoGroup.add(key);
+        } else {
+            // Black key
+            const key = new THREE.Mesh(blackKeyGeometry, blackKeyMaterial);
+            key.position.set(xPos, 0.6, 0.2);
+            key.castShadow = true;
+            pianoGroup.add(key);
+        }
+    }
+    
+    // Position the piano
+    pianoGroup.position.set(posX, 0.5, -2);
+    
+    return pianoGroup;
+}
+
+// Add pianos to the scene
+const leftPiano = createPiano(-5);
+scene.add(leftPiano);
+
+const rightPiano = createPiano(5);
+scene.add(rightPiano);
+
+// Create tables
+function createTable(posX) {
+    const tableGroup = new THREE.Group();
+    
+    // Table top
+    const topGeometry = new THREE.BoxGeometry(2, 0.1, 1.5);
+    const topMaterial = new THREE.MeshPhongMaterial({ color: 0x996633 });
+    const top = new THREE.Mesh(topGeometry, topMaterial);
+    top.position.y = 0.7;
+    top.castShadow = true;
+    tableGroup.add(top);
+    
+    // Table legs
+    const legGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1.4);
+    const legMaterial = new THREE.MeshPhongMaterial({ color: 0x996633 });
+    
+    const leg1 = new THREE.Mesh(legGeometry, legMaterial);
+    leg1.position.set(0.8, 0, 0.6);
+    leg1.castShadow = true;
+    tableGroup.add(leg1);
+    
+    const leg2 = new THREE.Mesh(legGeometry, legMaterial);
+    leg2.position.set(-0.8, 0, 0.6);
+    leg2.castShadow = true;
+    tableGroup.add(leg2);
+    
+    const leg3 = new THREE.Mesh(legGeometry, legMaterial);
+    leg3.position.set(0.8, 0, -0.6);
+    leg3.castShadow = true;
+    tableGroup.add(leg3);
+    
+    const leg4 = new THREE.Mesh(legGeometry, legMaterial);
+    leg4.position.set(-0.8, 0, -0.6);
+    leg4.castShadow = true;
+    tableGroup.add(leg4);
+    
+    // Add laptop
+    const laptopBase = new THREE.BoxGeometry(0.8, 0.05, 0.6);
+    const laptopScreen = new THREE.BoxGeometry(0.75, 0.5, 0.03);
+    const laptopMaterial = new THREE.MeshPhongMaterial({ color: 0x555555 });
+    const screenMaterial = new THREE.MeshPhongMaterial({ 
+        color: 0x88aaff, 
+        emissive: 0x1a2a4a,
+        emissiveIntensity: 0.5
+    });
+    
+    const base = new THREE.Mesh(laptopBase, laptopMaterial);
+    base.position.set(0, 0.775, 0);
+    base.castShadow = true;
+    tableGroup.add(base);
+    
+    const screen = new THREE.Mesh(laptopScreen, screenMaterial);
+    screen.position.set(0, 1, -0.3);
+    screen.rotation.x = -Math.PI / 4;
+    screen.castShadow = true;
+    tableGroup.add(screen);
+    
+    // Position the table
+    tableGroup.position.set(posX, 0, 1);
+    
+    return tableGroup;
+}
+
+// Add tables to the scene
+const leftTable = createTable(-5);
+scene.add(leftTable);
+
+const rightTable = createTable(5);
+scene.add(rightTable);
+
+// Create beds
+function createBed(posX) {
+    const bedGroup = new THREE.Group();
+    
+    // Bed base
+    const baseGeometry = new THREE.BoxGeometry(2, 0.3, 4);
+    const baseMaterial = new THREE.MeshPhongMaterial({ color: 0x663300 });
+    const base = new THREE.Mesh(baseGeometry, baseMaterial);
+    base.position.y = 0.15;
+    base.castShadow = true;
+    bedGroup.add(base);
+    
+    // Mattress
+    const mattressGeometry = new THREE.BoxGeometry(1.8, 0.2, 3.8);
+    const mattressMaterial = new THREE.MeshPhongMaterial({ color: 0xcccccc });
+    const mattress = new THREE.Mesh(mattressGeometry, mattressMaterial);
+    mattress.position.y = 0.4;
+    mattress.castShadow = true;
+    bedGroup.add(mattress);
+    
+    // Pillow
+    const pillowGeometry = new THREE.BoxGeometry(1.5, 0.15, 0.6);
+    const pillowMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    const pillow = new THREE.Mesh(pillowGeometry, pillowMaterial);
+    pillow.position.set(0, 0.575, -1.5);
+    pillow.castShadow = true;
+    bedGroup.add(pillow);
+    
+    // Blanket
+    const blanketGeometry = new THREE.BoxGeometry(1.6, 0.05, 2);
+    const blanketMaterial = new THREE.MeshPhongMaterial({ 
+        color: posX < 0 ? 0xee5533 : 0x3355ee
+    });
+    const blanket = new THREE.Mesh(blanketGeometry, blanketMaterial);
+    blanket.position.set(0, 0.525, 0.5);
+    blanket.castShadow = true;
+    bedGroup.add(blanket);
+    
+    // Position the bed
+    bedGroup.position.set(posX, 0, 5);
+    
+    return bedGroup;
+}
+
+// Add beds to the scene
+const leftBed = createBed(-5);
+scene.add(leftBed);
+
+const rightBed = createBed(5);
+scene.add(rightBed);
+
+// Create projection screens for visuals
+const screenGeometry = new THREE.PlaneGeometry(8, 6);
+const screenMaterial = new THREE.MeshPhongMaterial({
+    color: 0xffffff,
+    emissive: 0x111111,
+    side: THREE.DoubleSide
+});
+
+const leftScreen = new THREE.Mesh(screenGeometry, screenMaterial.clone());
+leftScreen.position.set(-5, 4, -4);
+leftScreen.receiveShadow = true;
+scene.add(leftScreen);
+
+const rightScreen = new THREE.Mesh(screenGeometry, screenMaterial.clone());
+rightScreen.position.set(5, 4, -4);
+rightScreen.receiveShadow = true;
+scene.add(rightScreen);
+
+// Create video camera objects
+function createCamera(posX) {
+    const cameraGroup = new THREE.Group();
+    
+    // Camera body
+    const bodyGeometry = new THREE.BoxGeometry(0.4, 0.4, 0.8);
+    const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x222222 });
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.castShadow = true;
+    cameraGroup.add(body);
+    
+    // Lens
+    const lensGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.3, 16);
+    const lensMaterial = new THREE.MeshPhongMaterial({ color: 0x111111 });
+    const lens = new THREE.Mesh(lensGeometry, lensMaterial);
+    lens.rotation.x = Math.PI / 2;
+    lens.position.z = 0.5;
+    lens.castShadow = true;
+    cameraGroup.add(lens);
+    
+    // Tripod
+    const standGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2, 8);
+    const standMaterial = new THREE.MeshPhongMaterial({ color: 0x444444 });
+    const stand = new THREE.Mesh(standGeometry, standMaterial);
+    stand.position.y = -1;
+    stand.castShadow = true;
+    cameraGroup.add(stand);
+    
+    // Position the camera
+    cameraGroup.position.set(posX, 2, 3);
+    cameraGroup.lookAt(posX, 1, 0);
+    
+    return cameraGroup;
+}
+
+// Add cameras to the scene
+const leftCamera = createCamera(-3);
+scene.add(leftCamera);
+
+const rightCamera = createCamera(3);
+scene.add(rightCamera);
+
+// Create ritualistic symbols
+function createSymbol(type, x, y, z, scale = 1) {
+    let geometry, material;
+    
+    switch(type) {
+        case 'fire':
+            const fireGroup = new THREE.Group();
+            
+            // Create fire base
+            const baseGeometry = new THREE.CylinderGeometry(0.5 * scale, 0.6 * scale, 0.2 * scale, 16);
+            const baseMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = -0.1 * scale;
+            base.castShadow = true;
+            fireGroup.add(base);
+            
+            // Create flames using cones
+            const flameGeometry = new THREE.ConeGeometry(0.4 * scale, 1 * scale, 8);
+            const flameMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff5500,
+                emissive: 0xff3300,
+                emissiveIntensity: 0.8,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            for (let i = 0; i < 5; i++) {
+                const flame = new THREE.Mesh(flameGeometry, flameMaterial.clone());
+                flame.position.set(
+                    (Math.random() - 0.5) * 0.3 * scale,
+                    0.5 * scale,
+                    (Math.random() - 0.5) * 0.3 * scale
+                );
+                flame.scale.set(
+                    0.5 + Math.random() * 0.5,
+                    0.7 + Math.random() * 0.5,
+                    0.5 + Math.random() * 0.5
+                );
+                flame.userData = { 
+                    speedY: 0.01 + Math.random() * 0.02,
+                    flickerSpeed: 0.05 + Math.random() * 0.1
+                };
+                fireGroup.add(flame);
+            }
+            
+            fireGroup.position.set(x, y, z);
+            return fireGroup;
+            
+        case 'altar':
+            const altarGroup = new THREE.Group();
+            
+            // Altar base
+            const altarGeometry = new THREE.BoxGeometry(1.5 * scale, 1 * scale, 1 * scale);
+            const altarMaterial = new THREE.MeshPhongMaterial({ color: 0x777777 });
+            const altar = new THREE.Mesh(altarGeometry, altarMaterial);
+            altar.castShadow = true;
+            altar.receiveShadow = true;
+            altarGroup.add(altar);
+            
+            // Create symbols on the altar
+            const symbolGeometry = new THREE.TorusGeometry(0.3 * scale, 0.05 * scale, 8, 16);
+            const symbolMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xddbb55,
+                emissive: 0x775500,
+                emissiveIntensity: 0.3
+            });
+            const symbol = new THREE.Mesh(symbolGeometry, symbolMaterial);
+            symbol.position.y = 0.55 * scale;
+            symbol.rotation.x = Math.PI / 2;
+            symbol.castShadow = true;
+            altarGroup.add(symbol);
+            
+            altarGroup.position.set(x, y, z);
+            return altarGroup;
+            
+        case 'chant':
+            // Visual representation of sound waves
+            const chantGroup = new THREE.Group();
+            
+            const ringGeometry = new THREE.TorusGeometry(0.8 * scale, 0.05 * scale, 8, 32);
+            const ringMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x88aaff,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            for (let i = 0; i < 3; i++) {
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial.clone());
+                ring.position.y = i * 0.3 * scale;
+                ring.scale.set(1 - i * 0.2, 1 - i * 0.2, 1 - i * 0.2);
+                ring.userData = {
+                    pulseSpeed: 0.02 + Math.random() * 0.02,
+                    pulseAmount: 0.1 + Math.random() * 0.1,
+                    initialScale: 1 - i * 0.2
+                };
+                chantGroup.add(ring);
+            }
+            
+            chantGroup.position.set(x, y, z);
+            return chantGroup;
+    }
+}
+
+// Add ritual elements
+const centerFire = createSymbol('fire', 0, 0, 0, 1.5);
+scene.add(centerFire);
+
+const leftAltar = createSymbol('altar', -5, 0, -3.5, 0.8);
+scene.add(leftAltar);
+
+const rightAltar = createSymbol('altar', 5, 0, -3.5, 0.8);
+scene.add(rightAltar);
+
+const leftChant = createSymbol('chant', -5, 2, 0, 0.5);
+scene.add(leftChant);
+
+const rightChant = createSymbol('chant', 5, 2, 0, 0.5);
+scene.add(rightChant);
+
+// Particle systems for rituals
+const particles = new THREE.Group();
+scene.add(particles);
+
+// Create a particle system
+function createParticles(count, color, size, posX) {
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    
+    for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * 4 + posX;
+        const y = Math.random() * 5;
+        const z = (Math.random() - 0.5) * 4;
+        
+        vertices.push(x, y, z);
+    }
+    
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    
+    const material = new THREE.PointsMaterial({
+        color: color,
+        size: size,
+        transparent: true,
+        opacity: 0.6,
+        sizeAttenuation: true
+    });
+    
+    const particleSystem = new THREE.Points(geometry, material);
+    particleSystem.userData = {
+        vertices: vertices,
+        velocities: Array(count).fill().map(() => ({
+            x: (Math.random() - 0.5) * 0.01,
+            y: Math.random() * 0.02,
+            z: (Math.random() - 0.5) * 0.01
+        }))
+    };
+    
+    return particleSystem;
+}
+
+const leftParticles = createParticles(200, 0xff6633, 0.05, -5);
+particles.add(leftParticles);
+
+const rightParticles = createParticles(200, 0x3366ff, 0.05, 5);
+particles.add(rightParticles);
+
+// Animation loop
+const clock = new THREE.Clock();
+const timerElement = document.getElementById('timer');
+let elapsedTime = 0;
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    const delta = clock.getDelta();
+    elapsedTime += delta;
+    
+    // Update timer display (72 hours max)
+    const hours = Math.floor(elapsedTime / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((elapsedTime % 3600) / 60).toString().padStart(2, '0');
+    const seconds = Math.floor(elapsedTime % 60).toString().padStart(2, '0');
+    timerElement.textContent = `${hours}:${minutes}:${seconds} / 72:00:00`;
+    
+    // Animate fire
+    if (centerFire) {
+        centerFire.children.forEach((child, i) => {
+            if (i > 0) { // Skip the base
+                child.position.y = 0.5 + Math.sin(elapsedTime * child.userData.speedY + i) * 0.1;
+                child.material.emissiveIntensity = 0.5 + Math.sin(elapsedTime * child.userData.flickerSpeed) * 0.3;
+                
+                // Rotate slightly for flickering effect
+                child.rotation.x = Math.sin(elapsedTime * 2 + i) * 0.1;
+                child.rotation.z = Math.cos(elapsedTime * 2 + i * 2) * 0.1;
+            }
+        });
+        
+        // Update fire light position and intensity
+        fireLight.intensity = 1.2 + Math.sin(elapsedTime * 3) * 0.3;
+    }
+    
+    // Animate chant rings
+    [leftChant, rightChant].forEach(chant => {
+        if (chant) {
+            chant.children.forEach(ring => {
+                const scale = ring.userData.initialScale + 
+                    Math.sin(elapsedTime * ring.userData.pulseSpeed) * ring.userData.pulseAmount;
+                ring.scale.set(scale, scale, scale);
+                
+                // Make the rings slowly rotate
+                ring.rotation.x += 0.01;
+                ring.rotation.y += 0.005;
+                ring.rotation.z += 0.0075;
+            });
+        }
+    });
+    
+    // Animate particles
+    particles.children.forEach(particleSystem => {
+        const positions = particleSystem.geometry.attributes.position.array;
+        
+        for (let i = 0; i < positions.length; i += 3) {
+            const idx = i / 3;
+            
+            // Update positions based on velocities
+            positions[i] += particleSystem.userData.velocities[idx].x;
+            positions[i + 1] += particleSystem.userData.velocities[idx].y;
+            positions[i + 2] += particleSystem.userData.velocities[idx].z;
+            
+            // Reset particles that go too high
+            if (positions[i + 1] > 5) {
+                const originX = positions[i] > 0 ? 5 : -5;
+                positions[i] = (Math.random() - 0.5) * 4 + originX;
+                positions[i + 1] = 0;
+                positions[i + 2] = (Math.random() - 0.5) * 4;
+            }
+        }
+        
+        particleSystem.geometry.attributes.position.needsUpdate = true;
+        
+        // Slowly rotate the particle system
+        particleSystem.rotation.y += 0.002;
+    });
+    
+    // Slowly orbit camera around scene
+    camera.position.x = Math.sin(elapsedTime * 0.1) * 15;
+    camera.position.z = Math.cos(elapsedTime * 0.1) * 15;
+    camera.lookAt(0, 2, 0);
+    
+    renderer.render(scene, camera);
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Start the animation
+animate();
+</script>
+</body>
+</html>
