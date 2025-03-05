@@ -1,226 +1,1940 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>ars culus™</title>
-    <style>
-        body {
-            background: white url('marble.jpg');
-            font-family: 'Times New Roman', serif;
-            margin: 20px;
-            color: black;
-        }
-        
-        .handwritten {
-            border: 3px double black;
-            padding: 10px;
-            background: white;
-            max-width: 600px;
-            margin: 20px auto;
-            box-shadow: 8px 8px 0px #888;
-        }
-        
-        .paint-button {
-            background: white;
-            border: 3px outset black;
-            padding: 5px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            margin: 10px;
-            font-family: 'Comic Sans MS', cursive;
-        }
-	.big-button {
-            background: white;
-            border: 10px outset black;
-            padding: 10px 25px;
-            font-size: 25px;
-            cursor: pointer;
-            margin: 10px;
-            font-family: 'Comic Sans MS', bold;
-        
-        .paint-button:hover {
-            border: 3px inset black;
-            background: #EEE;
-        }
+<title>ethan blackburn :: digital space</title>
+<style>
+  body {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: "Courier New", monospace;
+    margin: 40px;
+    line-height: 1.6;
+    height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+  
+  ::selection {
+    background: rgba(0,0,0,0.1);
+  }
+  
+  .header {
+    margin-bottom: 60px;
+    padding-bottom: 20px;
+    width: 200px;
+    position: relative;
+  }
+  
+  .header h1 {
+    font-size: 14px;
+    font-weight: normal;
+    transition: letter-spacing 1.5s ease;
+  }
+  
+  .header h1:hover {
+    letter-spacing: 1px;
+  }
+  
+  .divider {
+    margin: 20px 0;
+    height: 30px;
+    position: relative;
+    width: 200px;
+    overflow: hidden;
+  }
+  
+  .divider::before {
+    content: '[ . . . . . ]';
+    position: absolute;
+    letter-spacing: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+    animation: pulse 4s infinite alternate;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+  }
+  
+  a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.5s ease;
+    position: absolute;
+    z-index: 10;
+    font-weight: bold;
+  }
+  
+  a:hover {
+    opacity: 0.8;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  .left-column {
+    position: fixed;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    padding: 40px 0;
+  }
+  
+  .right-column {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  #collected {
+    top: 200px;
+    left: 40px;
+    background-color: rgba(255,255,255,0.8);
+    padding: 2px 5px;
+  }
+  
+  #writings {
+    top: 300px;
+    left: 180px;
+    background-color: rgba(255,255,255,0.8);
+    padding: 2px 5px;
+  }
+  
+  #ideas {
+    top: 400px;
+    left: 80px;
+    background-color: rgba(255,255,255,0.8);
+    padding: 2px 5px;
+  }
+  
+  #about {
+    top: 350px;
+    left: 140px;
+    opacity: 0.9;
+    background-color: rgba(255,255,255,0.8);
+    padding: 2px 5px;
+  }
+  
+  .menu-item {
+    transition: all 0.3s ease;
+  }
+  
+  .date {
+    position: fixed;
+    bottom: 20px;
+    left: 40px;
+    font-size: 12px;
+    color: #666;
+    transition: color 0.5s ease;
+  }
+  
+  .date:hover {
+    color: #000;
+  }
+  
+  .random-image {
+    padding: 20px;
+    position: relative;
+    transition: all 1s ease;
+  }
+  
+  .random-image img {
+    max-width: 400px;
+    height: auto;
+    opacity: 0.8;
+    transition: all 0.8s ease;
+    filter: grayscale(20%);
+  }
+  
+  .random-image:hover img {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  
+  .cursor-follower {
+    position: fixed;
+    height: 30px;
+    width: 30px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: all 0.15s ease;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+  
+  .hidden-text {
+    position: absolute;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    color: #333;
+    pointer-events: none;
+  }
+  
+  .visual-element {
+    position: absolute;
+    opacity: 0.1;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  
+  #noise-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 1;
+  }
+  
+  .thought {
+    position: absolute;
+    font-size: 11px;
+    color: #999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+    max-width: 150px;
+    text-align: center;
+    pointer-events: none;
+  }
+  
+  .secret-button {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+    opacity: 0.2;
+    border-radius: 50%;
+    background: #000;
+    transition: all 0.3s ease;
+  }
+  
+  .secret-button:hover {
+    opacity: 0.5;
+    transform: scale(1.5);
+  }
+  
+  .typewriter-effect {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+    animation: typing 3.5s steps(30, end);
+  }
 
-	 .big-button:hover {
-            border: 10px inset black;
-            background: #EEE;
-	
-	}
-        .marquee {
-            width: 100%;
-            background: black;
-            color: white;
-            padding: 5px 0;
-            font-family: Arial;
-        }
-        
-        .disclaimer {
-            font-size: 9px;
-            color: #666;
-            border-top: 1px dashed black;
-            margin-top: 50px;
-        }
-    </style>
+  @keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+  
+  /* Word fragment styles */
+  .word-fragment {
+    position: absolute;
+    padding: 5px 8px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+    cursor: move;
+    user-select: none;
+    z-index: 5;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .word-fragment:hover {
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    z-index: 6;
+  }
+  
+  .word-fragment.selected {
+    background-color: rgba(240, 240, 240, 0.9);
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+    z-index: 7;
+  }
+  
+  #word-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  #word-count {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 12px;
+    color: #666;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px 8px;
+    border-radius: 3px;
+    z-index: 10;
+  }
+  
+  #clear-button {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #666;
+    padding: 5px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+  
+  #clear-button:hover {
+    background-color: rgba(240, 240, 240, 0.9);
+  }
+  
+  #story-container {
+    position: fixed;
+    bottom: 60px;
+    left: 40px;
+    width: 80%;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px dashed rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    font-size: 14px;
+    min-height: 40px;
+    z-index: 10;
+    display: none;
+  }
+  
+  #story-button {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #666;
+    padding: 5px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+  
+  #story-button:hover {
+    background-color: rgba(240, 240, 240, 0.9);
+  }
+  
+  /* Sound System Interface Styling */
+  .sound-system {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    color: #333;
+  }
+  
+  .sound-toggle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(240, 240, 240, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sound-toggle:hover {
+    transform: scale(1.1);
+    background-color: rgba(240, 240, 240, 0.9);
+  }
+  
+  .sound-toggle.active {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .sound-toggle.sequence-playing {
+    animation: pulse-toggle 1s infinite alternate;
+  }
+  
+  @keyframes pulse-toggle {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.1); opacity: 1; }
+  }
+  
+  .sound-icon {
+    font-size: 10px;
+    line-height: 1;
+  }
+  
+  .sound-panel {
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    width: 180px;
+    background-color: rgba(250, 250, 250, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    transform-origin: bottom right;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.2s ease;
+  }
+  
+  .sound-panel.visible {
+    display: block;
+    transform: scale(1);
+    opacity: 1;
+  }
+  
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .panel-title {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+  }
+  
+  .panel-close {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    font-size: 14px;
+  }
+  
+  .panel-close:hover {
+    opacity: 1;
+  }
+  
+  .sound-params {
+    margin-bottom: 10px;
+  }
+  
+  .param-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  
+  .param-row label {
+    width: 70px;
+    font-size: 9px;
+    opacity: 0.7;
+  }
+  
+  .param-row input[type="range"] {
+    flex: 1;
+    height: 3px;
+    -webkit-appearance: none;
+    background: rgba(0, 0, 0, 0.1);
+    outline: none;
+  }
+  
+  .param-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #000;
+    cursor: pointer;
+  }
+  
+  .engine-modes {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .mode-btn {
+    flex: 1;
+    font-size: 8px;
+    text-align: center;
+    padding: 3px 0;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .mode-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .mode-btn.active {
+    background: #000;
+    color: #fff;
+  }
+  
+  .mini-scope {
+    height: 20px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Active word styling */
+  .word-fragment.sonic-active {
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+    position: relative;
+  }
+  
+  .word-fragment.sonic-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: #000;
+    opacity: 0.3;
+    animation: line-pulse 2s infinite;
+  }
+  
+  @keyframes line-pulse {
+    0%, 100% { opacity: 0.1; width: 20%; }
+    50% { opacity: 0.4; width: 100%; }
+  }
+  
+  /* Sound field visualization */
+  .sound-field {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+  
+  .field-node {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  
+  .sound-selection-mode .word-fragment:hover {
+    cursor: crosshair !important;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .secret-button.active {
+    background: #000 !important;
+    transform: scale(1.5) !important;
+    opacity: 0.8 !important;
+  }
+</style>
 </head>
 <body>
-    <!-- Simulated GeoCities-style background -->
-    <div style="position:fixed; top:0; left:0; z-index:-1">
-        <img src="marble.gif" width="50" height="50">
+  <canvas id="noise-canvas"></canvas>
+  <div class="cursor-follower"></div>
+  
+  <div class="left-column">
+    <div class="header">
+      <h1 class="typewriter-effect">ethan blackburn</h1>
+      <p style="font-size: 12px;">digital space</p>
     </div>
+    
+    <div class="divider"></div>
+    
+    <a href="sounds.html" id="collected" class="menu-item">collected efforts</a>
+    <a href="writings.html" id="writings" class="menu-item">writings</a>
+    <a href="ideas.html" id="ideas" class="menu-item">ideas</a>
+    <a href="about.html" id="about" class="menu-item">more about</a>
+    
+    <div class="date" id="current-date">
+      last updated: 19.02.2025
+    </div>
+  </div>
+  
+  <div class="right-column">
+    <div class="random-image" id="randomImage"></div>
+  </div>
+  
+  <div id="word-container"></div>
+  <div id="word-count">words: 0/500</div>
+  <button id="clear-button">clear words</button>
+  <button id="story-button">show/hide story area</button>
+  <div id="story-container"></div>
+  
+  <div class="secret-button" id="secretButton"></div>
+  
+  <!-- Sound System Interface -->
+  <div id="sound-system" class="sound-system">
+    <div class="sound-toggle" id="sound-toggle">
+      <span class="sound-icon">◌</span>
+    </div>
+    <div class="sound-panel">
+      <div class="panel-header">
+        <div class="panel-title">sound engine</div>
+        <div class="panel-close" id="panel-close">×</div>
+      </div>
+      <div class="sound-params">
+        <div class="param-row">
+          <label>feedback</label>
+          <input type="range" id="feedback-slider" min="0" max="100" value="62">
+        </div>
+        <div class="param-row">
+          <label>density</label>
+          <input type="range" id="density-slider" min="0" max="100" value="40">
+        </div>
+        <div class="param-row">
+          <label>noise floor</label>
+          <input type="range" id="noise-slider" min="0" max="100" value="18">
+        </div>
+        <div class="param-row">
+          <label>bit crush</label>
+          <input type="range" id="bit-slider" min="0" max="100" value="30">
+        </div>
+      </div>
+      <div class="engine-modes">
+        <div class="mode-btn active" data-mode="no-input">no-input</div>
+        <div class="mode-btn" data-mode="spectral">spectral</div>
+        <div class="mode-btn" data-mode="granular">granular</div>
+      </div>
+      <div class="mini-scope" id="mini-scope"></div>
+    </div>
+  </div>
+  
+  <!-- Sound Field for Visualization -->
+  <div class="sound-field" id="sound-field"></div>
+  
+  <script>
+    // Store the text for word generation
+    const fragmentText = `Penance is a sacrifice. It allows the mind to surrender after flailing around to be all that it believes it is. The measurements of a ritual is in a similar quantity. The ancients believed in chants. These chants had fire sometimes. The fire had power sometimes. We submit to the gods of assurity, of confirmations to establish a connect with a higher entity, all while beguiled to smithereens about the entirety. The term ritual, though appearing as a binary that would suggest the (NOT)ritual, is bereft of significance by the utter lack of requirements to survive therein. A pilgrimage is the accruing of interest in the divine, the mother of tourism even— undoubtedly of artistry. A statue of a distant lands serves regular salutations to oblivion. The sole ritual is that of creating music for music, as a surrender to the desire to impose/impress/introduce what belief is ours. A ritual is a knitted ladder that carries the desire of a certain direction, unaware of time, existing beyond good nor evil. Ars Culus makes a detour to the surrender into continuous medium immersion as pilgrimage. The act of sharing is the meagre, blessed sweet morsels distributed. The commitment to serve is paramount in this concert. We don't accept the binary presentation as a duality, though obvious it may seem. The presentation, across all mediums, will be presented as a singularity. One thing is only but a temporal distortion of another. The ritual, the penance, the pilgrimage is the only service Ars Culus can provide to the current situation. A ritual serves a quasi purpose to most, and we mean to objectively parade the act of generating music, to exist, to create nothing and everything… but never to deter any prominence away from the very ritual of living; the very ritual of breathing; the very ritual of pretending; the very ritualistic act of conviction itself. How things endure? 
+How things begin? 
+How absence speaks? 
+How habits know themself?
+ How does the radio know when you're finally learning the lyrics? 
+How does an unnoticed maintain its membership?
+ How does a key know its teeth? 
+How does the shelf know its edge? 
+How does the hook carry itself? 
+how can coming come? how sitting sits? 
+how does melting melts melted? 
+How might a wall count its cracks? 
+How does a door know the impatient? 
+How when a word book refuses to contain containing which it promised to contain? 
+How will do I close covers? How do I read upside down? 
+How might a clock, a streetlight?
+ How do I say something without repeating anyone else? 
+How will repetition hold me? 
+How will others know me? 
+How is it possible that certain objects or places appear, over extended observation, to cultivate a richness, significance and an almost animate presence as the possibility for meaningful human interaction, to those same observers, slowly and increasingly disappear and turns instead towards zero?
+How if meaning decides to take an unauthorized vacation from its meaning-duties?
+How do inanimate people remain living? 
+How do I read lips? 
+How to make without thinking? 
+How weight grounds? 
+How to know noise? 
+How to distinguish approach of realization? 
+How do I know absence? 
+How when numbers number a little too much and start to letter? 
+How are moments linked together? 
+How to grow without knowing? 
+How a child and his dog? 
+How will feeling be felt?
+ How will things change once they're understood as over? 
+How when color refuses to maintain its chromatic responsibilities? 
+When volume asserts loud to wide and wide to loud confusing its cubic sense of self with a probable disconnected sense of spatial significance, but that they may never meet and be known as occupations of two different sized spaces to another?
+ How if Sunday doesn't show proper affection to Monday? 
+How when four birds are precisely not four but also not quite three?
+ How when they never were over? 
+How when this necessitates the absence of birthed and repressed sentiment to be privatized in your own language before you recall its significance at the end of this sentence? 
+How if an alphabet reputes itself without consulting proper alphabetical authority? 
+How light remembers? How does structure structure structurally structuring structured structures? 
+How endings begin? 
+How to fragment a unity?
+ How when collecting embarks on training to assert itself as a lifestyle, but targets the wrong verbal audience? 
+How to hear silent now? 
+How a line can curve?
+ How a wind can move?
+ How redness is how it is? 
+How to make is doing to be but how to approach?
+How it will be, when it is how to see, when is how now gone here when so much nothing to become? 
+How to touch without touching? 
+How to face and facing?`;
 
-    <center>
-        <img src="under_construction.gif" alt="">
-        <h1 style="text-shadow: 3px 3px 0px #CCC">ars culus<br>♻♻⍋⍺⑬</h1>
+    // Split the text into words
+    const words = fragmentText.split(/\s+/).filter(word => word.length > 0);
+    
+    // Variables for word tracking
+    let activeWords = [];
+    let draggedWord = null;
+    let offsetX, offsetY;
+    let selectedWords = [];
+    
+    // Audio context and global variables
+    let audioContext;
+    let masterBus;
+    let loopInterval;
+    let activeSoundNodes = new Map();
+    let soundEngine = {
+      mode: 'no-input',
+      isActive: false,
+      soundBuffer: null,
+      fieldNodes: [],
+      analyser: null
+    };
+    
+    // Custom cursor
+    const cursorFollower = document.querySelector('.cursor-follower');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursorFollower.style.left = e.clientX + 'px';
+      cursorFollower.style.top = e.clientY + 'px';
+      
+      // Slightly delay and scale down the follower on mouse down
+      document.addEventListener('mousedown', () => {
+        cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.7)';
+      });
+      
+      document.addEventListener('mouseup', () => {
+        cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+    });
+    
+    // Random positioning for menu items
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+      item.addEventListener('mouseover', () => {
+        const hiddenText = document.createElement('div');
+        hiddenText.classList.add('hidden-text');
+        hiddenText.innerText = 'explore';
+        hiddenText.style.left = (parseInt(item.style.left) + 100) + 'px';
+        hiddenText.style.top = (parseInt(item.style.top) + 5) + 'px';
+        document.body.appendChild(hiddenText);
         
-        <div class="handwritten">
-            <p><em>"you've known for a while now.."</em></p>
-            <marquee behavior="scroll" direction="left">is a hot air balloon tour agency masquerading as an art collective that is pretending to be a funk/pop duo in the 70s imagining what music would sound like in 2019 which is an auspicious year for them because they were recently expelled from Brazil that is primarily composed of V Noel and Ethan Blackburn, who use sound as a vice to enter(tain) others because most recently they showcased a week-long artistic takeover in a curious bookstore in Maastricht as well as many rituals composed of smaller rituals to show that. 
-</marquee>
-        </div>
-
-        <!-- Main navigation -->
-        <br>
-        <button class="paint-button" onclick="location.href='pages/ethan.html'">ETHAN</button>
-        <button class="paint-button" onclick="location.href='pages/noel.html'">NOEL</button>
-	<br>
-	<button class="big-button" onclick="location.href='pages/ritual.html'">SEE OUR 72 HOUR RITUAL</button>        
-	    
-        <!-- "Deep" manifesto -->
-        <div class="handwritten" style="margin-top:30px; transform: rotate(-1deg)">
-            <textarea rows="10" cols="50" style="background:url('marble.gif'); border:2px groove black; font-family:Courier">
-            ╔════════════════════════════════╗
-            ║ 	  ars culus METHODOLOGY      ║
-            ║               		     ║
-            ╚════════════════════════════════╝
+        setTimeout(() => {
+          hiddenText.style.opacity = 1;
+        }, 100);
+        
+        item.addEventListener('mouseout', () => {
+          hiddenText.style.opacity = 0;
+          setTimeout(() => {
+            document.body.removeChild(hiddenText);
+          }, 500);
+        });
+      });
+    });
+    
+    // Enhanced random image display
+    const images = [
+      'images/1.png',
+      'images/2.png',
+      'images/3.png',
+    ];
+    
+    function displayRandomImage() {
+      const randomIndex = Math.floor(Math.random() * images.length);
+      const imageContainer = document.getElementById('randomImage');
+      imageContainer.innerHTML = `<img src="${images[randomIndex]}" alt="random artwork">`;
+      
+      // Add subtle rotation
+      const img = imageContainer.querySelector('img');
+      const randomRotation = (Math.random() * 4) - 2; // -2 to 2 degrees
+      img.style.transform = `rotate(${randomRotation}deg)`;
+      
+      // Add random thoughts around the image
+      addRandomThoughts(imageContainer);
+    }
+    
+    function addRandomThoughts(container) {
+      const thoughts = [
+        "something exists here",
+        "between spaces",
+        "chicken sandwich",
+        "whispering eyelash",
+        "moonbeam mcdonalds"
+      ];
+      
+      // Clear previous thoughts
+      const oldThoughts = document.querySelectorAll('.thought');
+      oldThoughts.forEach(thought => thought.remove());
+      
+      // Add 2-3 random thoughts
+      const numThoughts = Math.floor(Math.random() * 2) + 2;
+      
+      for (let i = 0; i < numThoughts; i++) {
+        const thought = document.createElement('div');
+        thought.classList.add('thought');
+        thought.innerText = thoughts[Math.floor(Math.random() * thoughts.length)];
+        
+        // Random positioning around the image
+        const randomX = (Math.random() * 600) - 300;
+        const randomY = (Math.random() * 600) - 300;
+        thought.style.left = `calc(50% + ${randomX}px)`;
+        thought.style.top = `calc(50% + ${randomY}px)`;
+        
+        container.appendChild(thought);
+        
+        // Fade in after a random delay
+        setTimeout(() => {
+          thought.style.opacity = 0.6;
+          thought.style.transform = 'translateY(0)';
+        }, Math.random() * 1000 + 500);
+      }
+    }
+    
+    // Dynamic noise canvas
+    const canvas = document.getElementById('noise-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function setupCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    function drawNoise() {
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imageData.data;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        const value = Math.floor(Math.random() * 255);
+        data[i] = value;     // red
+        data[i + 1] = value; // green
+        data[i + 2] = value; // blue
+        data[i + 3] = 10;    // alpha (very transparent)
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+      requestAnimationFrame(drawNoise);
+    }
+    
+    // Add visual elements randomly throughout the page
+    function addVisualElements() {
+      const numElements = 8;
+      const shapes = ['[   ]', '( )', '{ }', '/ \\', '· ·', '- -'];
+      
+      for (let i = 0; i < numElements; i++) {
+        const element = document.createElement('div');
+        element.classList.add('visual-element');
+        element.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+        
+        // Random position
+        element.style.left = (Math.random() * 80) + 10 + '%';
+        element.style.top = (Math.random() * 80) + 10 + '%';
+        element.style.transform = `rotate(${Math.random() * 90 - 45}deg)`;
+        
+        document.body.appendChild(element);
+      }
+    }
+    
+    // Contextual time display
+    function updateTime() {
+      const date = new Date();
+      const timeString = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+      const dateElement = document.getElementById('current-date');
+      
+      if (date.getHours() > 22 || date.getHours() < 5) {
+        dateElement.innerText = `late hours: ${timeString}`;
+      } else {
+        dateElement.innerText = `last updated: 26.02.2025 [${timeString}]`;
+      }
+    }
+    
+    // Function to create a random word element
+    function createWordElement(word, x, y) {
+      if (activeWords.length >= 500) {
+        return null; // Maximum words reached
+      }
+      
+      const wordEl = document.createElement('div');
+      wordEl.classList.add('word-fragment');
+      wordEl.innerText = word;
+      wordEl.style.left = `${x}px`;
+      wordEl.style.top = `${y}px`;
+      wordEl.style.transform = `rotate(${(Math.random() * 6) - 3}deg)`;
+      
+      // Add unique ID for sound tracking
+      wordEl.id = 'word-' + Math.random().toString(36).substr(2, 9);
+      
+      wordEl.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // Only left mouse button
+        draggedWord = wordEl;
+        offsetX = e.clientX - wordEl.getBoundingClientRect().left;
+        offsetY = e.clientY - wordEl.getBoundingClientRect().top;
+        
+        // Bring to front
+        document.getElementById('word-container').appendChild(wordEl);
+        
+        // Toggle selection
+        if (e.ctrlKey || e.metaKey) {
+          wordEl.classList.toggle('selected');
+          if (wordEl.classList.contains('selected')) {
+            selectedWords.push(wordEl);
+          } else {
+            selectedWords = selectedWords.filter(w => w !== wordEl);
+          }
+        } else {
+          // Clear other selections if not multi-selecting
+          if (!wordEl.classList.contains('selected')) {
+            selectedWords.forEach(w => w.classList.remove('selected'));
+            selectedWords = [wordEl];
+            wordEl.classList.add('selected');
+          }
+        }
+      });
+      
+      // Add sound trigger on cmd+click
+      wordEl.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey) {
+          if (!soundEngine.isActive) {
+            initSoundEngine();
+          }
+          
+          // Toggle sound on/off for this word
+          if (activeSoundNodes.has(wordEl.id)) {
+            stopWordSound(wordEl);
+          } else {
+            createWordSound(wordEl);
+          }
+          
+          e.stopPropagation(); // Prevent creating new words
+        }
+      });
+      
+      // Make the element draggable
+      wordEl.style.pointerEvents = 'auto';
+      
+      // Add to active words array
+      activeWords.push(wordEl);
+      updateWordCount();
+      
+      return wordEl;
+    }
+    
+    // Function to create a random word at a position
+    function createRandomWord(x, y) {
+      const randomIndex = Math.floor(Math.random() * words.length);
+      const randomWord = words[randomIndex];
+      const wordEl = createWordElement(randomWord, x, y);
+      
+      if (wordEl) {
+        document.getElementById('word-container').appendChild(wordEl);
+      }
+    }
+    
+    // Function to update word count
+    function updateWordCount() {
+      document.getElementById('word-count').innerText = `words: ${activeWords.length}/500`;
+    }
+    
+    // Add event listeners for dragging
+    document.addEventListener('mousemove', (e) => {
+      if (draggedWord) {
+        const newX = e.clientX - offsetX;
+        const newY = e.clientY - offsetY;
+        
+        // Move the dragged word
+        draggedWord.style.left = `${newX}px`;
+        draggedWord.style.top = `${newY}px`;
+        
+        // Move all selected words with the same offset if this is part of selection
+        if (selectedWords.includes(draggedWord) && selectedWords.length > 1) {
+          const deltaX = newX - parseInt(draggedWord.style.left);
+          const deltaY = newY - parseInt(draggedWord.style.top);
+          
+          selectedWords.forEach(word => {
+            if (word !== draggedWord) {
+              const wordX = parseInt(word.style.left) + deltaX;
+              const wordY = parseInt(word.style.top) + deltaY;
+              word.style.left = `${wordX}px`;
+              word.style.top = `${wordY}px`;
+            }
+          });
+        }
+      }
+    });
+    
+    document.addEventListener('mouseup', () => {
+      draggedWord = null;
+    });
+    
+    // Add event listener for screen clicks to create words
+    document.addEventListener('click', (e) => {
+      // Don't create words when clicking on existing elements or controls
+      if (e.target.classList.contains('word-fragment') || 
+          e.target.tagName === 'A' || 
+          e.target.id === 'clear-button' ||
+          e.target.id === 'story-button' ||
+          e.target.classList.contains('secret-button') ||
+          e.target.classList.contains('sound-toggle') ||
+          e.target.closest('.sound-panel')) {
+        return;
+      }
+      
+      createRandomWord(e.clientX, e.clientY);
+    });
+    
+    // Clear button functionality
+    document.getElementById('clear-button').addEventListener('click', () => {
+      const container = document.getElementById('word-container');
+      container.innerHTML = '';
+      activeWords = [];
+      selectedWords = [];
+      updateWordCount();
+      
+      // Stop all sounds
+      if (soundEngine.isActive) {
+        activeSoundNodes.forEach((node, id) => {
+          const wordEl = document.getElementById(id);
+          if (wordEl) stopWordSound(wordEl);
+        });
+      }
+    });
+    
+    // Story button functionality
+    document.getElementById('story-button').addEventListener('click', () => {
+      const storyContainer = document.getElementById('story-container');
+      if (storyContainer.style.display === 'none' || !storyContainer.style.display) {
+        storyContainer.style.display = 'block';
+        
+        // Create a story from selected words
+        if (selectedWords.length > 0) {
+          const storyText = selectedWords.map(word => word.innerText).join(' ');
+          storyContainer.innerText = storyText;
+        } else {
+          storyContainer.innerText = 'Select words to create your story. (Ctrl+click to select multiple words)';
+        }
+      } else {
+        storyContainer.style.display = 'none';
+      }
+    });
+    
+    // Secret button functionality
+    document.getElementById('secretButton').addEventListener('click', () => {
+      // Randomize all word positions
+      activeWords.forEach(word => {
+        const randomX = Math.random() * (window.innerWidth - 100);
+        const randomY = Math.random() * (window.innerHeight - 100);
+        
+        word.style.left = `${randomX}px`;
+        word.style.top = `${randomY}px`;
+        word.style.transform = `rotate(${(Math.random() * 20) - 10}deg)`;
+        
+        // Animate the transition
+        word.style.transition = 'left 1s ease, top 1s ease, transform 1s ease';
+        setTimeout(() => {
+          word.style.transition = 'transform 0.2s, box-shadow 0.2s';
+        }, 1000);
+      });
+      
+      // Change image instantly
+      displayRandomImage();
+    });
+    
+    // Double-click secret button for sound texture
+    document.getElementById('secretButton').addEventListener('dblclick', () => {
+      if (!soundEngine.isActive) {
+        initSoundEngine();
+      }
+      
+      // Create a textural soundscape based on all visible words
+      const allWords = document.querySelectorAll('.word-fragment');
+      const wordSample = [];
+      
+      // Select a random subset of words (up to 8)
+      const maxWords = Math.min(8, allWords.length);
+      const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+      wordSample.push(...shuffled.slice(0, maxWords));
+      
+      // Stop any current sequence
+      stopSequence();
+      
+      // Clear existing sounds
+      activeSoundNodes.forEach((node, id) => {
+        const wordEl = document.getElementById(id);
+        if (wordEl) stopWordSound(wordEl);
+      });
+      
+      // Create textural sounds from sample words
+      wordSample.forEach(word => {
+        createWordSound(word);
+      });
+      
+      // Visual feedback
+      document.getElementById('secretButton').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('secretButton').classList.remove('active');
+      }, 500);
+    });
+    
+    // Initialize the sound engine
+    function initSoundEngine() {
+      try {
+        // Create audio context
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create master bus with limiter
+        const limiter = audioContext.createDynamicsCompressor();
+        limiter.threshold.value = -3;
+        limiter.knee.value = 0;
+        limiter.ratio.value = 20;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.25;
+        limiter.connect(audioContext.destination);
+        
+        masterBus = audioContext.createGain();
+        masterBus.gain.value = 0.4; // Master volume
+        masterBus.connect(limiter);
+        
+        // Create analyzer
+        soundEngine.analyser = audioContext.createAnalyser();
+        soundEngine.analyser.fftSize = 1024;
+        soundEngine.analyser.smoothingTimeConstant = 0.85;
+        soundEngine.analyser.connect(masterBus);
+        
+        // Create buffer for granular synthesis
+        const bufferSize = 2 * audioContext.sampleRate; // 2 seconds
+        soundEngine.soundBuffer = audioContext.createBuffer(2, bufferSize, audioContext.sampleRate);
+        
+        // Fill buffer with noise for initial state
+        for (let channel = 0; channel < 2; channel++) {
+          const data = soundEngine.soundBuffer.getChannelData(channel);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+        }
+        
+        // Initialize sound field visualization
+        createSoundField();
+        
+        // Start the scope visualization
+        updateScope();
+        
+        // Set engine as active
+        soundEngine.isActive = true;
+        document.getElementById('sound-toggle').classList.add('active');
+        
+        console.log("Sound engine initialized");
+      } catch (e) {
+        console.error("Sound engine initialization failed:", e);
+      }
+    }
+    
+    // Create a sound field visualization with nodes
+    function createSoundField() {
+      // Clear existing field
+      const soundField = document.getElementById('sound-field');
+      soundField.innerHTML = '';
+      soundEngine.fieldNodes = [];
+      
+      // Create field nodes
+      const nodeCount = 30;
+      for (let i = 0; i < nodeCount; i++) {
+        const node = document.createElement('div');
+        node.className = 'field-node';
+        
+        // Random position
+        node.style.left = `${Math.random() * 100}%`;
+        node.style.top = `${Math.random() * 100}%`;
+        
+        soundField.appendChild(node);
+        soundEngine.fieldNodes.push(node);
+      }
+    }
+    
+    // Update the mini scope visualization
+    function updateScope() {
+      if (!soundEngine.isActive || !soundEngine.analyser) {
+        requestAnimationFrame(updateScope);
+        return;
+      }
+      
+      const scope = document.getElementById('mini-scope');
+      const bufferLength = soundEngine.analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      soundEngine.analyser.getByteTimeDomainData(dataArray);
+      
+      // Clear scope
+      scope.innerHTML = '';
+      
+      // Create waveform
+      const waveform = document.createElement('canvas');
+      waveform.width = scope.clientWidth;
+      waveform.height = scope.clientHeight;
+      scope.appendChild(waveform);
+      
+      const ctx = waveform.getContext('2d');
+      ctx.clearRect(0, 0, waveform.width, waveform.height);
+      
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.beginPath();
+      
+      const sliceWidth = waveform.width / bufferLength;
+      let x = 0;
+      
+      for (let i = 0; i < bufferLength; i++) {
+        const v = dataArray[i] / 128.0;
+        const y = v * waveform.height / 2;
+        
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        
+        x += sliceWidth;
+      }
+      
+      ctx.stroke();
+      
+      // Update field nodes based on audio data
+      if (soundEngine.fieldNodes.length > 0) {
+        const step = Math.floor(bufferLength / soundEngine.fieldNodes.length);
+        
+        for (let i = 0; i < soundEngine.fieldNodes.length; i++) {
+          const dataIndex = i * step;
+          const value = dataArray[dataIndex] / 255;
+          
+          // Only show nodes when there's significant audio
+          const threshold = 0.5;
+          if (value > threshold) {
+            const opacity = (value - threshold) / (1 - threshold);
+            soundEngine.fieldNodes[i].style.opacity = opacity * 0.4;
             
-            The ritual begins when you:
-            1. Reject binary oppositions
-            2. Install our toolbar
-            3. Fax your signature
-            4. Breathe into the monitor
-
-
-		    now.
-
-diktat of the art worker.
-	the art worker… 
-1. shall create.
-2. shall enable creation.
-3. shall resist discrimination.
-4. shall resist idolization. 
-5. shall submit.
-6. shall sublimate.
-7. shall sublate.
-8. shall collaborate.
-9. shall assimilate.
-10. works for no one.
-11. is of every one.
-12. shall love.
-
-Ars culus sends its two favourite art workers out in Maastricht to spread joyous news of a universal freedom to create. 
-
-worker Ethan Blackburn is an American sound artist centered on visual communications between art and artist. With his experience as a musician, he aims to engage with sound and space through social contexts as noise.  
-
-worker V Noel, hailing from India, proposes therapeutic effects of community art experiences. He facilitates active audience performances that ask for help in completing the experience. 
-
-They are here to claim a joyous news of a universal right to create.
-
-
-
-		    
-		How things endure? 
-		How things begin? 
-		How absence speaks? 
-		How habits know themself?
-		 How does the radio know when you're finally learning the lyrics? 
-		How does an unnoticed maintain its membership?
-		 How does a key know its teeth? 
-		How does the shelf know its edge? 
-		How does the hook carry itself? 
-		how can coming come? how sitting sits? 
-		how does melting melts melted? 
-		How might a wall count its cracks? 
-		How does a door know the impatient? 
-		How when a word book refuses to contain containing which it promised to contain? 
-		How will do I close covers? How do I read upside down? 
-		How might a clock, a streetlight?
-		 How do I say something without repeating anyone else? 
-		How will repetition hold me? 
-		How will others know me? 
-		How is it possible that certain objects or places appear, over extended observation, to cultivate a richness, significance and an almost animate presence as the possibility for meaningful human interaction, to those same observers, slowly and increasingly disappear and turns instead towards zero?
-		How if meaning decides to take an unauthorized vacation from its meaning-duties?
-		How do inanimate people remain living? 
-		How do I read lips? 
-		How to make without thinking? 
-		How weight grounds? 
-		How to know noise? 
-		How to distinguish approach of realization? 
-		How do I know absence? 
-		How when numbers number a little too much and start to letter? 
-		How are moments linked together? 
-		How to grow without knowing? 
-		How a child and his dog? 
-		How will feeling be felt?
-		 How will things change once they’re understood as over? 
-		How when color refuses to maintain its chromatic responsibilities? 
-		When volume asserts loud to wide and wide to loud confusing its cubic sense of self with a probable disconnected sense of spatial significance, but that they may never meet and be known as occupations of two different sized spaces to another?
-		 How if Sunday doesn’t show proper affection to Monday? 
-		How when four birds are precisely not four but also not quite three?
-		 How when they never were over? 
-		How when this necessitates the absence of birthed and repressed sentiment to be privatized in your own language before you recall its significance at the end of this sentence? 
-		How if an alphabet reputes itself without consulting proper alphabetical authority? 
-		How light remembers? How does structure structure structurally structuring structured structures? 
-		How endings begin? 
-		How to fragment a unity?
-		 How when collecting embarks on training to assert itself as a lifestyle, but targets the wrong verbal audience? 
-		How to hear silent now? 
-		How a line can curve?
-		 How a wind can move?
-		 How redness is how it is? 
-		How to make is doing to be but how to approach?
-		How it will be, when it is how to see, when is how now gone here when so much nothing to become? 
-		How to touch without touching? 
-		How to face and facing? 
-
-		    
-why are we motivated?:
-We want to tell people that there is more than one way of knowing.
-Ars Culus Is a collectism-driven enterprise that covers themes of relativistic politics in the consumed. 
-To simplify, we assemble to disseminate paradoxical paradigms that catalyze statistical convergence towards symbiotic synergy.
-As in, we want to question why is something art or not.
-
-
-		    
-            </textarea>
-        </div>
-
-        <!-- Mock academic endorsement -->
-        <div style="border-left:10px solid black; padding-left:10px; margin:30px">
-            <p>"Ars Culus represents the pinnacle of applied phenomenology. basically, we mean"<br>
-            <img src="spacer.gif" width="10" height="10">
-            - <a href="#" style="color:blue; text-decoration:none">Dr. M.B.S. Johnson</a><br>
-            <font size="1">(Journal of Neo-Anachronistic Studies, 1997)</font></p>
-        </div>
-    </center>
-
-    <!-- Retro footer -->
-    <div class="disclaimer">
-        <center>
-            <img src="divider.gif">
-            <p><br>
-            Requires Macromedia Shockwave® plugin<br>
-		    <br>
-        </center>
-    </div>
-
-    <!-- Hidden relic elements -->
-    <div style="display:none">
-        <!-- Simulated 90s tracking pixel -->
-        <img src="log_visitor.cgi?ref=geocities">
-        <!-- Abandoned VRML prototype -->
-        <embed src="arsculus.wrl" width="0" height="0">
-    </div>
+            // Size based on amplitude
+            const size = 1 + value * 3;
+            soundEngine.fieldNodes[i].style.width = `${size}px`;
+            soundEngine.fieldNodes[i].style.height = `${size}px`;
+          } else {
+            soundEngine.fieldNodes[i].style.opacity = 0;
+          }
+        }
+      }
+      
+      requestAnimationFrame(updateScope);
+    }
+    
+    // Calculate word complexity (0-1)
+    function calculateWordComplexity(text) {
+      // Factors that increase complexity:
+      // - Length
+      // - Unusual characters
+      // - Consonant clusters
+      
+      const length = Math.min(text.length / 10, 1); // 0-1 based on length up to 10 chars
+      
+      // Count unusual characters
+      const unusualChars = text.replace(/[a-z ]/gi, '').length;
+      const unusualFactor = Math.min(unusualChars / 3, 1); // 0-1 based on up to 3 unusual chars
+      
+      // Count consonant clusters
+      const consonantClusters = (text.match(/[bcdfghjklmnpqrstvwxyz]{2,}/gi) || []).length;
+      const clusterFactor = Math.min(consonantClusters / 2, 1); // 0-1 based on up to 2 clusters
+      
+      // Combine factors with weights
+      return (length * 0.4) + (unusualFactor * 0.3) + (clusterFactor * 0.3);
+    }
+    
+    // Create a distortion curve
+    function createDistortionCurve(amount) {
+      const samples = 44100;
+      const curve = new Float32Array(samples);
+      const deg = Math.PI / 180;
+      
+      for (let i = 0; i < samples; i++) {
+        const x = (i * 2) / samples - 1;
+        curve[i] = (3 + amount) * x * 20 * deg / (Math.PI + amount * Math.abs(x));
+      }
+      
+      return curve;
+    }
+    
+    // Create a bit crusher curve
+    function createBitCrusherCurve(bits) {
+      const samples = 44100;
+      const curve = new Float32Array(samples);
+      const step = Math.pow(0.5, bits);
+      
+      for (let i = 0; i < samples; i++) {
+        const x = (i * 2) / samples - 1;
+        curve[i] = Math.round(x / step) * step;
+      }
+      
+      return curve;
+    }
+    
+    // Create a noise buffer
+    function createNoiseBuffer(duration) {
+      if (!audioContext) return null;
+      
+      const sampleRate = audioContext.sampleRate;
+      const bufferSize = duration * sampleRate;
+      const buffer = audioContext.createBuffer(1, bufferSize, sampleRate);
+      const data = buffer.getChannelData(0);
+      
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      
+      return buffer;
+    }
+    
+    // Create advanced sound generator for a word
+    function createWordSound(wordEl) {
+      if (!soundEngine.isActive || !audioContext) return null;
+      
+      // Get word properties
+      const text = wordEl.innerText;
+      const rect = wordEl.getBoundingClientRect();
+      
+      // Calculate parameters based on word properties
+      const xPos = rect.left / window.innerWidth; // 0-1 position in window
+      const yPos = rect.top / window.innerHeight; // 0-1 position in window
+      const wordLength = text.length;
+      const wordComplexity = calculateWordComplexity(text);
+      
+      // Get slider values
+      const feedbackAmount = document.getElementById('feedback-slider').value / 100;
+      const densityAmount = document.getElementById('density-slider').value / 100;
+      const noiseAmount = document.getElementById('noise-slider').value / 100;
+      const bitCrushAmount = document.getElementById('bit-slider').value / 100;
+      
+      // Create a sound node network based on current mode
+      let output;
+      
+      switch (soundEngine.mode) {
+        case 'no-input':
+          output = createNoInputNetwork(xPos, yPos, wordLength, wordComplexity);
+          break;
+        case 'spectral':
+          output = createSpectralNetwork(xPos, yPos, wordLength, wordComplexity);
+          break;
+        case 'granular':
+          output = createGranularNetwork(xPos, yPos, wordLength, wordComplexity);
+          break;
+        default:
+          output = createNoInputNetwork(xPos, yPos, wordLength, wordComplexity);
+      }
+      
+      // Apply global parameters
+      if (output && output.feedbackGain) {
+        output.feedbackGain.gain.value = feedbackAmount * 0.99; // Keep below 1.0 to prevent runaway feedback
+      }
+      
+      if (output && output.noiseGain) {
+        output.noiseGain.gain.value = noiseAmount * 0.2;
+      }
+      
+      if (output && output.bitCrusher) {
+        // Simple bit crusher effect
+        const decimation = Math.pow(2, Math.floor(bitCrushAmount * 8));
+        output.bitCrusher.curve = createBitCrusherCurve(decimation);
+      }
+      
+      // Connect to master bus
+      if (output && output.output) {
+        output.output.connect(soundEngine.analyser);
+        
+        // Store the sound node network
+        activeSoundNodes.set(wordEl.id, output);
+        
+        // Mark word as sonically active
+        wordEl.classList.add('sonic-active');
+        
+        return output;
+      }
+      
+      return null;
+    }
+    
+    // Create a no-input mixer style feedback network
+    function createNoInputNetwork(x, y, wordLength, complexity) {
+      if (!audioContext) return null;
+      
+      // Create a feedback loop with filters and distortion
+      const output = audioContext.createGain();
+      output.gain.value = 0.8;
+      
+      // Create filters
+      const filter1 = audioContext.createBiquadFilter();
+      filter1.type = 'bandpass';
+      filter1.frequency.value = 200 + (x * 2000); // 200-2200Hz based on x position
+      filter1.Q.value = 5 + (y * 20); // 5-25 Q based on y position
+      
+      const filter2 = audioContext.createBiquadFilter();
+      filter2.type = 'highpass';
+      filter2.frequency.value = 2000 - (y * 1800); // 200-2000Hz based on inverted y position
+      filter2.Q.value = 1;
+      
+      // Create distortion
+      const distortion = audioContext.createWaveShaper();
+      distortion.curve = createDistortionCurve(50 + (complexity * 50)); // 50-100 distortion amount
+      
+      // Create delay for feedback
+      const delay = audioContext.createDelay();
+      delay.delayTime.value = 0.1 + (wordLength * 0.01); // 0.1-0.2s based on word length
+      
+      // Create feedback gain
+      const feedbackGain = audioContext.createGain();
+      feedbackGain.gain.value = 0.7; // Will be adjusted by slider
+      
+      // Create noise source
+      const noiseSource = audioContext.createBufferSource();
+      const noiseBuffer = createNoiseBuffer(1);
+      noiseSource.buffer = noiseBuffer;
+      noiseSource.loop = true;
+      
+      const noiseGain = audioContext.createGain();
+      noiseGain.gain.value = 0.1; // Will be adjusted by slider
+      
+      // Create bit crusher
+      const bitCrusher = audioContext.createWaveShaper();
+      bitCrusher.curve = createBitCrusherCurve(8); // 8-bit reduction
+      
+      // Connect the feedback loop
+      noiseSource.connect(noiseGain);
+      noiseGain.connect(filter1);
+      
+      filter1.connect(distortion);
+      distortion.connect(filter2);
+      filter2.connect(delay);
+      delay.connect(feedbackGain);
+      feedbackGain.connect(filter1); // Complete the feedback loop
+      
+      filter2.connect(bitCrusher);
+      bitCrusher.connect(output);
+      
+      // Start the noise source
+      noiseSource.start();
+      
+      // Return the network
+      return {
+        output,
+        feedbackGain,
+        noiseGain,
+        bitCrusher,
+        filter1,
+        filter2,
+        noiseSource,
+        stop: function() {
+          this.noiseSource.stop();
+          this.output.disconnect();
+        }
+      };
+    }
+    
+    // Create a spectral processing network
+    function createSpectralNetwork(x, y, wordLength, complexity) {
+      if (!audioContext) return null;
+      
+      // Create oscillator bank (additive synthesis)
+      const output = audioContext.createGain();
+      output.gain.value = 0.7;
+      
+      // Number of oscillators based on word complexity
+      const numOscillators = 3 + Math.floor(complexity * 5); // 3-8 oscillators
+      
+      // Base frequency derived from x position (higher to the right)
+      const baseFreq = 100 + (x * 400); // 100-500Hz
+      
+      // Frequency spread based on y position (wider at the bottom)
+      const freqSpread = 1 + (y * 4); // 1-5 ratio
+      
+      // Create feedback path
+      const feedbackDelay = audioContext.createDelay();
+      feedbackDelay.delayTime.value = 0.05 + (wordLength * 0.01); // 0.05-0.15s
+      
+      const feedbackGain = audioContext.createGain();
+      feedbackGain.gain.value = 0.5;
+      
+      const feedbackFilter = audioContext.createBiquadFilter();
+      feedbackFilter.type = 'highpass';
+      feedbackFilter.frequency.value = 1000;
+      
+      // Create bit crusher
+      const bitCrusher = audioContext.createWaveShaper();
+      bitCrusher.curve = createBitCrusherCurve(4);
+      
+      // Create noise source for texture
+      const noiseSource = audioContext.createBufferSource();
+      noiseSource.buffer = createNoiseBuffer(1);
+      noiseSource.loop = true;
+      
+      const noiseGain = audioContext.createGain();
+      noiseGain.gain.value = 0.05;
+      
+      const noiseFilter = audioContext.createBiquadFilter();
+      noiseFilter.type = 'bandpass';
+      noiseFilter.frequency.value = baseFreq * 2;
+      noiseFilter.Q.value = 1;
+      
+      // Connect noise path
+      noiseSource.connect(noiseGain);
+      noiseGain.connect(noiseFilter);
+      noiseFilter.connect(output);
+      
+      // Connect feedback path
+      output.connect(feedbackDelay);
+      feedbackDelay.connect(feedbackFilter);
+      feedbackFilter.connect(feedbackGain);
+      feedbackGain.connect(bitCrusher);
+      bitCrusher.connect(output);
+      
+      // Create oscillator bank
+      const oscillators = [];
+      
+      for (let i = 0; i < numOscillators; i++) {
+        const osc = audioContext.createOscillator();
+        
+        // Frequency determined by harmonic series with spread
+        const harmonicRatio = i === 0 ? 1 : (i * freqSpread);
+        osc.frequency.value = baseFreq * harmonicRatio;
+        
+        // Alternate between sine and triangle for rich but not harsh sound
+        osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+        
+        // Create gain node for this oscillator
+        const oscGain = audioContext.createGain();
+        
+        // Volume decreases for higher harmonics
+        oscGain.gain.value = 0.7 / (i + 1);
+        
+        // Connect oscillator
+        osc.connect(oscGain);
+        oscGain.connect(output);
+        
+        // Start oscillator
+        osc.start();
+        
+        // Store for cleanup
+        oscillators.push({ osc, gain: oscGain });
+      }
+      
+      // Start noise source
+      noiseSource.start();
+      
+      // Return the network
+      return {
+        output,
+        feedbackGain,
+        noiseGain,
+        bitCrusher,
+        oscillators,
+        noiseSource,
+        stop: function() {
+          this.oscillators.forEach(o => o.osc.stop());
+          this.noiseSource.stop();
+          this.output.disconnect();
+        }
+      };
+    }
+    
+    // Create a granular synthesis network
+    function createGranularNetwork(x, y, wordLength, complexity) {
+      if (!audioContext || !soundEngine.soundBuffer) return null;
+      
+      // Output gain node
+      const output = audioContext.createGain();
+      output.gain.value = 0.7;
+      
+      // Create filters
+      const filter = audioContext.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 300 + (x * 2000); // 300-2300Hz
+      filter.Q.value = 2 + (y * 8); // 2-10 Q
+      
+      // Create bit crusher
+      const bitCrusher = audioContext.createWaveShaper();
+      bitCrusher.curve = createBitCrusherCurve(8);
+      
+      // Feedback path
+      const feedbackDelay = audioContext.createDelay();
+      feedbackDelay.delayTime.value = 0.1 + (y * 0.2); // 0.1-0.3s
+      
+      const feedbackGain = audioContext.createGain();
+      feedbackGain.gain.value = 0.4;
+      
+      // Noise source for texture
+      const noiseSource = audioContext.createBufferSource();
+      noiseSource.buffer = createNoiseBuffer(1);
+      noiseSource.loop = true;
+      
+      const noiseGain = audioContext.createGain();
+      noiseGain.gain.value = 0.1;
+      
+      // Connect noise path
+      noiseSource.connect(noiseGain);
+      noiseGain.connect(filter);
+      
+      // Connect feedback path
+      filter.connect(output);
+      output.connect(feedbackDelay);
+      feedbackDelay.connect(feedbackGain);
+      feedbackGain.connect(bitCrusher);
+      bitCrusher.connect(filter);
+      
+      // Start grain generation
+      const grainDuration = 0.05 + (complexity * 0.1); // 0.05-0.15s
+      const grainSpacing = 0.05 + ((1 - complexity) * 0.1); // 0.05-0.15s (inverse of complexity)
+      
+      // Schedule grains
+      let grainTime = audioContext.currentTime;
+      const grains = [];
+      
+      function scheduleGrain() {
+        if (!soundEngine.soundBuffer) return;
+        
+        const grain = audioContext.createBufferSource();
+        grain.buffer = soundEngine.soundBuffer;
+        
+        // Create envelope for the grain
+        const envelope = audioContext.createGain();
+        envelope.gain.value = 0;
+        
+        // Randomize grain parameters
+        const offset = Math.random() * (soundEngine.soundBuffer.duration - grainDuration);
+        const detune = (Math.random() * 200) - 100; // -100 to +100 cents
+        
+        // Set grain parameters
+        grain.playbackRate.value = Math.pow(2, detune / 1200); // Convert cents to playback rate
+        grain.loop = false;
+        
+        // Set envelope
+        envelope.gain.setValueAtTime(0, grainTime);
+        envelope.gain.linearRampToValueAtTime(0.5, grainTime + grainDuration * 0.1);
+        envelope.gain.linearRampToValueAtTime(0.5, grainTime + grainDuration * 0.9);
+        envelope.gain.linearRampToValueAtTime(0, grainTime + grainDuration);
+        
+        // Connect grain
+        grain.connect(envelope);
+        envelope.connect(filter);
+        
+        // Start grain
+        grain.start(grainTime, offset, grainDuration + 0.01);
+        
+        // Schedule next grain
+        grainTime += grainSpacing;
+        
+        // Store grain for potential cleanup
+        grains.push(grain);
+        
+        // Remove old grains from array
+        while (grains.length > 100) {
+          grains.shift();
+        }
+      }
+      
+      // Schedule initial grains
+      for (let i = 0; i < 10; i++) {
+        scheduleGrain();
+      }
+      
+      // Start scheduler interval
+      const schedulerInterval = setInterval(scheduleGrain, grainSpacing * 1000);
+      
+      // Start noise source
+      noiseSource.start();
+      
+      // Return the network
+      return {
+        output,
+        feedbackGain,
+        noiseGain,
+        bitCrusher,
+        filter,
+        noiseSource,
+        schedulerInterval,
+        stop: function() {
+          clearInterval(this.schedulerInterval);
+          this.noiseSource.stop();
+          this.output.disconnect();
+        }
+      };
+    }
+    
+    // Stop sound for a word
+    function stopWordSound(wordEl) {
+      const id = wordEl.id;
+      if (activeSoundNodes.has(id)) {
+        const soundNode = activeSoundNodes.get(id);
+        if (soundNode && soundNode.stop) {
+          soundNode.stop();
+        }
+        activeSoundNodes.delete(id);
+        wordEl.classList.remove('sonic-active');
+      }
+    }
+    
+    // Play a sequence of selected words
+    function playSelectedWordSequence() {
+      if (!soundEngine.isActive || selectedWords.length === 0) return;
+      
+      // Stop any currently playing sounds
+      activeSoundNodes.forEach((node, id) => {
+        const wordEl = document.getElementById(id);
+        if (wordEl) stopWordSound(wordEl);
+      });
+      
+      // Clear any existing loop interval
+      if (loopInterval) clearInterval(loopInterval);
+      
+      // Calculate total sequence duration based on word count and complexity
+      const totalComplexity = selectedWords.reduce((sum, word) => {
+        return sum + calculateWordComplexity(word.innerText);
+      }, 0);
+      
+      const averageComplexity = totalComplexity / selectedWords.length;
+      const baseDuration = 2000 + (averageComplexity * 3000); // 2-5 seconds base duration
+      
+      // Start looping through the selected words
+      let currentIndex = 0;
+      
+      function playNextWord() {
+        // Remove active class from all words
+        selectedWords.forEach(word => {
+          word.classList.remove('sonic-active');
+          stopWordSound(word);
+        });
+        
+        // Get current word and play its sound
+        const currentWord = selectedWords[currentIndex];
+        createWordSound(currentWord);
+        
+        // Move to next word
+        currentIndex = (currentIndex + 1) % selectedWords.length;
+      }
+      
+      // Play first word immediately
+      playNextWord();
+      
+      // Set up interval for continuous looping
+      loopInterval = setInterval(playNextWord, baseDuration);
+      
+      // Visual feedback that sequence is playing
+      document.getElementById('sound-toggle').classList.add('sequence-playing');
+    }
+    
+    // Stop playing the sequence
+    function stopSequence() {
+      if (loopInterval) {
+        clearInterval(loopInterval);
+        loopInterval = null;
+        
+        // Stop all active sounds
+        activeSoundNodes.forEach((node, id) => {
+          const wordEl = document.getElementById(id);
+          if (wordEl) stopWordSound(wordEl);
+        });
+        
+        document.getElementById('sound-toggle').classList.remove('sequence-playing');
+      }
+    }
+    
+    // Set up UI event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      // Sound toggle button
+      const soundToggle = document.getElementById('sound-toggle');
+      const soundPanel = document.querySelector('.sound-panel');
+      
+      soundToggle.addEventListener('click', () => {
+        if (!soundEngine.isActive) {
+          initSoundEngine();
+        } else {
+          // Toggle panel visibility
+          if (soundPanel.classList.contains('visible')) {
+            soundPanel.classList.remove('visible');
+          } else {
+            soundPanel.classList.add('visible');
+          }
+        }
+      });
+      
+      // Panel close button
+      document.getElementById('panel-close').addEventListener('click', () => {
+        soundPanel.classList.remove('visible');
+      });
+      
+      // Engine mode buttons
+      const modeButtons = document.querySelectorAll('.mode-btn');
+      modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Update mode
+          soundEngine.mode = btn.dataset.mode;
+          
+          // Update UI
+          modeButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Regenerate sounds for active words
+          const activeWordIds = [...activeSoundNodes.keys()];
+          activeWordIds.forEach(id => {
+            const wordEl = document.getElementById(id);
+            if (wordEl) {
+              stopWordSound(wordEl);
+              createWordSound(wordEl);
+            }
+          });
+        });
+      });
+      
+      // Add keyboard shortcut for sequence playback
+      document.addEventListener('keydown', (e) => {
+        // Space key to toggle sequence playback
+        if (e.code === 'Space' && (e.metaKey || e.ctrlKey) && soundEngine.isActive) {
+          e.preventDefault();
+          
+          if (loopInterval) {
+            stopSequence();
+          } else {
+            playSelectedWordSequence();
+          }
+        }
+        
+        // Escape key to close sound panel
+        if (e.key === 'Escape' && soundPanel.classList.contains('visible')) {
+          soundPanel.classList.remove('visible');
+        }
+      });
+      
+      // Add sequence play button to story controls
+      const playSequenceButton = document.createElement('button');
+      playSequenceButton.id = 'play-sequence-button';
+      playSequenceButton.innerText = 'loop selected';
+      playSequenceButton.style.position = 'fixed';
+      playSequenceButton.style.bottom = '20px';
+      playSequenceButton.style.right = '70px';
+      playSequenceButton.style.fontSize = '10px';
+      playSequenceButton.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+      playSequenceButton.style.border = '1px solid rgba(0, 0, 0, 0.1)';
+      playSequenceButton.style.padding = '3px 6px';
+      playSequenceButton.style.borderRadius = '2px';
+      playSequenceButton.style.cursor = 'pointer';
+      playSequenceButton.style.zIndex = '10';
+      playSequenceButton.style.transition = 'all 0.3s ease';
+      
+      playSequenceButton.addEventListener('mouseover', () => {
+        playSequenceButton.style.backgroundColor = 'rgba(240, 240, 240, 0.9)';
+      });
+      
+      playSequenceButton.addEventListener('mouseout', () => {
+        playSequenceButton.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+      });
+      
+      playSequenceButton.addEventListener('click', () => {
+        if (!soundEngine.isActive) {
+          initSoundEngine();
+        }
+        
+        if (loopInterval) {
+          stopSequence();
+          playSequenceButton.innerText = 'loop selected';
+        } else {
+          playSelectedWordSequence();
+          playSequenceButton.innerText = 'stop loop';
+        }
+      });
+      
+      document.body.appendChild(playSequenceButton);
+    });
+    
+    // Enhance the word selection experience
+    document.addEventListener('mousedown', (e) => {
+      if (e.metaKey || e.ctrlKey) {
+        // Add subtle visual feedback when in sound selection mode
+        document.body.classList.add('sound-selection-mode');
+      }
+    });
+    
+    document.addEventListener('mouseup', () => {
+      document.body.classList.remove('sound-selection-mode');
+    });
+    
+    // Initialize everything
+    window.onload = () => {
+      displayRandomImage();
+      addVisualElements();
+      setupCanvas();
+      drawNoise();
+      setInterval(updateTime, 10000); // Update time every 10 seconds
+      updateTime(); // Initial time update
+      
+      // Initial word count
+      updateWordCount();
+      
+      // Make menu items slightly drift on hover
+      menuItems.forEach(item => {
+        item.addEventListener('mouseover', () => {
+          const randomOffsetX = (Math.random() * 10) - 5;
+          const randomOffsetY = (Math.random() * 10) - 5;
+          
+          item.style.transform = `translate(${randomOffsetX}px, ${randomOffsetY}px)`;
+        });
+        
+        item.addEventListener('mouseout', () => {
+          item.style.transform = 'translate(0, 0)';
+        });
+      });
+      
+      // Add a subtle hint about cmd+click functionality
+      const soundHint = document.createElement('div');
+      soundHint.style.position = 'fixed';
+      soundHint.style.bottom = '60px';
+      soundHint.style.right = '20px';
+      soundHint.style.fontSize = '9px';
+      soundHint.style.color = '#999';
+      soundHint.style.opacity = '0.6';
+      soundHint.innerText = 'cmd+click words to create sound';
+      document.body.appendChild(soundHint);
+      
+      // Fade out hint after 8 seconds
+      setTimeout(() => {
+        soundHint.style.transition = 'opacity 2s ease';
+        soundHint.style.opacity = '0';
+        setTimeout(() => {
+          soundHint.remove();
+        }, 2000);
+      }, 8000);
+    };
+    
+    // Window resize handling
+    window.addEventListener('resize', setupCanvas);
+    
+    // Random image changes periodically
+    setInterval(() => {
+      // 20% chance to change image every 15 seconds
+      if (Math.random() < 0.2) {
+        displayRandomImage();
+      }
+    }, 15000);
+  </script>
 </body>
 </html>
