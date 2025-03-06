@@ -2,225 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ars culus™</title>
-    <style>
-        body {
-            background: white url('marble.jpg');
-            font-family: 'Times New Roman', serif;
-            margin: 20px;
-            color: black;
-        }
-        
-        .handwritten {
-            border: 3px double black;
-            padding: 10px;
-            background: white;
-            max-width: 600px;
-            margin: 20px auto;
-            box-shadow: 8px 8px 0px #888;
-        }
-        
-        .paint-button {
-            background: white;
-            border: 3px outset black;
-            padding: 5px 15px;
-            font-size: 14px;
-            cursor: pointer;
-            margin: 10px;
-            font-family: 'Comic Sans MS', cursive;
-        }
-	.big-button {
-            background: white;
-            border: 10px outset black;
-            padding: 10px 25px;
-            font-size: 25px;
-            cursor: pointer;
-            margin: 10px;
-            font-family: 'Comic Sans MS', bold;
-        
-        .paint-button:hover {
-            border: 3px inset black;
-            background: #EEE;
-        }
-
-	 .big-button:hover {
-            border: 10px inset black;
-            background: #EEE;
-	
-	}
-        .marquee {
-            width: 100%;
-            background: black;
-            color: white;
-            padding: 5px 0;
-            font-family: Arial;
-        }
-        
-        .disclaimer {
-            font-size: 9px;
-            color: #666;
-            border-top: 1px dashed black;
-            margin-top: 50px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ars culus™ | TRANSCENDENT RITUAL</title>
+    <meta name="description" content="ars culus™ - A transcendent ritual experience exploring the boundaries of art and perception.">
+    <meta property="og:title" content="ars culus™ | TRANSCENDENT RITUAL">
+    <meta property="og:description" content="Enter a 72-hour ritual that questions why something is art or not.">
+    <meta property="og:image" content="ritual-preview.jpg">
+    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <!-- Simulated GeoCities-style background -->
-    <div style="position:fixed; top:0; left:0; z-index:-1">
-        <img src="marble.gif" width="50" height="50">
+    <!-- Loading Screen -->
+    <div id="loading">
+        <h2>ars culus™ RITUAL INITIALIZING</h2>
+        <p>Rejecting binary oppositions...</p>
+        <div id="loading-bar">
+            <div id="loading-progress"></div>
+        </div>
     </div>
 
-    <center>
-        <img src="under_construction.gif" alt="">
-        <h1 style="text-shadow: 3px 3px 0px #CCC">ars culus<br>♻♻⍋⍺⑬</h1>
-        
-        <div class="handwritten">
-            <p><em>"you've known for a while now.."</em></p>
-            <marquee behavior="scroll" direction="left">is a hot air balloon tour agency masquerading as an art collective that is pretending to be a funk/pop duo in the 70s imagining what music would sound like in 2019 which is an auspicious year for them because they were recently expelled from Brazil that is primarily composed of V Noel and Ethan Blackburn, who use sound as a vice to enter(tain) others because most recently they showcased a week-long artistic takeover in a curious bookstore in Maastricht as well as many rituals composed of smaller rituals to show that. 
-</marquee>
-        </div>
+    <!-- Visual Effects Layers -->
+    <div class="grain"></div>
+    <div id="atmospheric-overlay"></div>
+    <div id="vignette"></div>
+    <div id="scan-lines"></div>
+    <div id="page-transition"></div>
 
-        <!-- Main navigation -->
-        <br>
-        <button class="paint-button" onclick="location.href='pages/ethan.html'">ETHAN</button>
-        <button class="paint-button" onclick="location.href='pages/noel.html'">NOEL</button>
-	<br>
-	<button class="big-button" onclick="location.href='pages/ritual.html'">SEE OUR 72 HOUR RITUAL</button>        
-	    
-        <!-- "Deep" manifesto -->
-        <div class="handwritten" style="margin-top:30px; transform: rotate(-1deg)">
-            <textarea rows="10" cols="50" style="background:url('marble.gif'); border:2px groove black; font-family:Courier">
-            ╔════════════════════════════════╗
-            ║ 	  ars culus METHODOLOGY      ║
-            ║               		     ║
-            ╚════════════════════════════════╝
+    <!-- Interface Elements -->
+    <div id="info">ARS CULUS - TRANSCENDENT RITUAL PILGRIMAGE</div>
+    <div id="timer">00:00:00 / 72:00:00</div>
+    <div id="manifesto-scroll"></div>
+    <div id="controls">PRESS: [1] Orbit View [2] Ethan Focus [3] Noel Focus [ESC] Return to Portal</div>
+    <button id="return-button" class="hidden">RETURN TO PORTAL</button>
+    
+    <!-- Accessibility Controls -->
+    <div id="accessibility-controls">
+        <button id="toggle-sound"><span id="sound-icon">🔊</span></button>
+    </div>
+    
+    <!-- Portal Entry Point -->
+    <div id="portal-container" class="hidden">
+        <div id="portal">
+            <img src="assets/icons/under_construction.gif" alt="">
+            <h1>ars culus<br>♻♻⍋⍺⑬</h1>
             
-            The ritual begins when you:
-            1. Reject binary oppositions
-            2. Install our toolbar
-            3. Fax your signature
-            4. Breathe into the monitor
-
-
-		    now.
-
-diktat of the art worker.
-	the art worker… 
-1. shall create.
-2. shall enable creation.
-3. shall resist discrimination.
-4. shall resist idolization. 
-5. shall submit.
-6. shall sublimate.
-7. shall sublate.
-8. shall collaborate.
-9. shall assimilate.
-10. works for no one.
-11. is of every one.
-12. shall love.
-
-Ars culus sends its two favourite art workers out in Maastricht to spread joyous news of a universal freedom to create. 
-
-worker Ethan Blackburn is an American sound artist centered on visual communications between art and artist. With his experience as a musician, he aims to engage with sound and space through social contexts as noise.  
-
-worker V Noel, hailing from India, proposes therapeutic effects of community art experiences. He facilitates active audience performances that ask for help in completing the experience. 
-
-They are here to claim a joyous news of a universal right to create.
-
-
-
-		    
-		How things endure? 
-		How things begin? 
-		How absence speaks? 
-		How habits know themself?
-		 How does the radio know when you're finally learning the lyrics? 
-		How does an unnoticed maintain its membership?
-		 How does a key know its teeth? 
-		How does the shelf know its edge? 
-		How does the hook carry itself? 
-		how can coming come? how sitting sits? 
-		how does melting melts melted? 
-		How might a wall count its cracks? 
-		How does a door know the impatient? 
-		How when a word book refuses to contain containing which it promised to contain? 
-		How will do I close covers? How do I read upside down? 
-		How might a clock, a streetlight?
-		 How do I say something without repeating anyone else? 
-		How will repetition hold me? 
-		How will others know me? 
-		How is it possible that certain objects or places appear, over extended observation, to cultivate a richness, significance and an almost animate presence as the possibility for meaningful human interaction, to those same observers, slowly and increasingly disappear and turns instead towards zero?
-		How if meaning decides to take an unauthorized vacation from its meaning-duties?
-		How do inanimate people remain living? 
-		How do I read lips? 
-		How to make without thinking? 
-		How weight grounds? 
-		How to know noise? 
-		How to distinguish approach of realization? 
-		How do I know absence? 
-		How when numbers number a little too much and start to letter? 
-		How are moments linked together? 
-		How to grow without knowing? 
-		How a child and his dog? 
-		How will feeling be felt?
-		 How will things change once they’re understood as over? 
-		How when color refuses to maintain its chromatic responsibilities? 
-		When volume asserts loud to wide and wide to loud confusing its cubic sense of self with a probable disconnected sense of spatial significance, but that they may never meet and be known as occupations of two different sized spaces to another?
-		 How if Sunday doesn’t show proper affection to Monday? 
-		How when four birds are precisely not four but also not quite three?
-		 How when they never were over? 
-		How when this necessitates the absence of birthed and repressed sentiment to be privatized in your own language before you recall its significance at the end of this sentence? 
-		How if an alphabet reputes itself without consulting proper alphabetical authority? 
-		How light remembers? How does structure structure structurally structuring structured structures? 
-		How endings begin? 
-		How to fragment a unity?
-		 How when collecting embarks on training to assert itself as a lifestyle, but targets the wrong verbal audience? 
-		How to hear silent now? 
-		How a line can curve?
-		 How a wind can move?
-		 How redness is how it is? 
-		How to make is doing to be but how to approach?
-		How it will be, when it is how to see, when is how now gone here when so much nothing to become? 
-		How to touch without touching? 
-		How to face and facing? 
-
-		    
-why are we motivated?:
-We want to tell people that there is more than one way of knowing.
-Ars Culus Is a collectism-driven enterprise that covers themes of relativistic politics in the consumed. 
-To simplify, we assemble to disseminate paradoxical paradigms that catalyze statistical convergence towards symbiotic synergy.
-As in, we want to question why is something art or not.
-
-
-		    
-            </textarea>
+            <div class="handwritten">
+                <p><em>"you've known for a while now.."</em></p>
+                <marquee behavior="scroll" direction="left">The ritual begins when you reject binary oppositions, install our toolbar, fax your signature, breathe into the monitor. Now.</marquee>
+            </div>
+            
+            <button class="paint-button" id="ethan-button">SUMMON ETHAN</button>
+            <button class="paint-button" id="noel-button">SUMMON NOEL</button>
+            <br>
+            <button class="big-button" id="enter-ritual">ENTER THE 72 HOUR RITUAL</button>
+            
+            <div class="quote-container">
+                <p>"Ars Culus represents the pinnacle of applied phenomenology. basically, we mean"<br>
+                <a href="#" class="author-link">Dr. M.B.S. Johnson</a><br>
+                <span class="publication">(Journal of Neo-Anachronistic Studies, 1997)</span></p>
+            </div>
+            
+            <!-- Visitor Counter -->
+            <div class="visitor-counter">
+                <span class="counter-label">VISITORS:</span>
+                <span class="counter-value">000731</span>
+            </div>
+            
+            <!-- Web Badges -->
+            <div class="web-badges">
+                <img src="assets/badges/netscape.gif" width="88" height="31" alt="Netscape Now!">
+                <img src="assets/badges/valid-html.gif" width="88" height="31" alt="Valid HTML">
+                <img src="assets/badges/midi-enabled.gif" width="88" height="31" alt="MIDI Enabled">
+                <img src="assets/badges/best-viewed.gif" width="88" height="31" alt="Best Viewed 800x600">
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <p>Requires Macromedia Shockwave® plugin & RealPlayer® 2.0<br>
+                Best viewed at 800x600 resolution<br>
+                © 1997-202X ars culus™ | All Rights Reserved and Simultaneously Rejected</p>
+                
+                <a href="#" class="guestbook-link">
+                    <img src="assets/icons/book.gif" width="16" height="16">SIGN OUR GUESTBOOK
+                </a>
+            </div>
         </div>
-
-        <!-- Mock academic endorsement -->
-        <div style="border-left:10px solid black; padding-left:10px; margin:30px">
-            <p>"Ars Culus represents the pinnacle of applied phenomenology. basically, we mean"<br>
-            <img src="spacer.gif" width="10" height="10">
-            - <a href="#" style="color:blue; text-decoration:none">Dr. M.B.S. Johnson</a><br>
-            <font size="1">(Journal of Neo-Anachronistic Studies, 1997)</font></p>
-        </div>
-    </center>
-
-    <!-- Retro footer -->
-    <div class="disclaimer">
-        <center>
-            <img src="divider.gif">
-            <p><br>
-            Requires Macromedia Shockwave® plugin<br>
-		    <br>
-        </center>
     </div>
 
-    <!-- Hidden relic elements -->
-    <div style="display:none">
-        <!-- Simulated 90s tracking pixel -->
-        <img src="log_visitor.cgi?ref=geocities">
-        <!-- Abandoned VRML prototype -->
-        <embed src="arsculus.wrl" width="0" height="0">
+    <!-- About Panel -->
+    <div id="about-panel" class="hidden">
+        <h2>About ars culus™</h2>
+        
+        <p>ars culus is a hot air balloon tour agency masquerading as an art collective that is pretending to be a funk/pop duo in the 70s imagining what music would sound like in 2019 which is an auspicious year for them because they were recently expelled from Brazil.</p>
+        
+        <p>The collective is primarily composed of V Noel and Ethan Blackburn, who use sound as a vice to enter(tain) others. Most recently they showcased a week-long artistic takeover in a curious bookstore in Maastricht as well as many rituals composed of smaller rituals.</p>
+        
+        <p>We assemble to disseminate paradoxical paradigms that catalyze statistical convergence towards symbiotic synergy.</p>
+        
+        <div class="button-container">
+            <button id="close-about">CLOSE</button>
+        </div>
     </div>
+    <div id="about-link">about</div>
+
+    <!-- Ritual Artifacts -->
+    <div id="ritual-artifacts" class="hidden">
+        <div class="ritual-symbol" id="symbol1"></div>
+        <div class="ritual-symbol" id="symbol2"></div>
+        <div class="ritual-symbol" id="symbol3"></div>
+    </div>
+
+    <!-- Narrative Fragments -->
+    <div id="narrative-fragments" class="hidden"></div>
+
+    <!-- Credits -->
+    <div id="credits" class="hidden">
+        <div class="credits-content">
+            <h2>ars culus™</h2>
+            
+            <p class="credits-subtitle">A TRANSCENDENT RITUAL</p>
+            
+            <p class="credits-creators">Created by<br>V NOEL & ETHAN BLACKBURN</p>
+            
+            <p class="credits-manifesto">The art worker shall create.<br>The art worker shall love.</p>
+            
+            <p class="credits-thanks">Thank you for participating in the ritual.</p>
+        </div>
+    </div>
+
+    <!-- Corner Flourishes -->
+    <div class="corner-flourish" id="corner-tl"></div>
+    <div class="corner-flourish" id="corner-tr"></div>
+    <div class="corner-flourish" id="corner-bl"></div>
+    <div class="corner-flourish" id="corner-br"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/visual-effects.js"></script>
+    <script src="js/ritual.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
