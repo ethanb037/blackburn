@@ -1,0 +1,759 @@
+/* =========================================
+   ars culus™ | TRANSCENDENT RITUAL
+   Core Styling System
+   ========================================= */
+
+/* Base Styling & Reset */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Times New Roman', serif;
+    cursor: url('assets/icons/paintbrush.cur'), auto;
+    background: #000;
+    color: white;
+}
+
+canvas {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================================
+   Loading Experience
+   ========================================= */
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    z-index: 100;
+    font-family: 'Courier New', monospace;
+}
+
+#loading h2 {
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+#loading-bar {
+    width: 300px;
+    height: 20px;
+    border: 2px solid white;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+#loading-progress {
+    height: 100%;
+    background: white;
+    width: 0%;
+    transition: width 0.5s;
+    position: relative;
+}
+
+#loading-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: loading-shine 1.5s infinite;
+}
+
+@keyframes loading-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* =========================================
+   Portal Entry Interface
+   ========================================= */
+#portal-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+#portal {
+    background: url('assets/backgrounds/marble.jpg');
+    border: 3px double black;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 8px 8px 0px #888;
+    text-align: center;
+    pointer-events: auto;
+    transform: rotate(-1deg);
+    transition: transform 0.5s;
+}
+
+#portal:hover {
+    transform: rotate(1deg);
+}
+
+#portal h1 {
+    text-shadow: 3px 3px 0px #CCC;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.handwritten {
+    border: 2px groove black;
+    padding: 10px;
+    background: url('assets/backgrounds/marble.gif');
+    margin: 20px auto;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: Courier, monospace;
+}
+
+.handwritten p {
+    margin: 0 0 10px 0;
+}
+
+.handwritten marquee {
+    color: #000;
+}
+
+/* =========================================
+   Button Styling
+   ========================================= */
+.paint-button {
+    background: white;
+    border: 3px outset black;
+    padding: 5px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 10px;
+    font-family: 'Comic Sans MS', cursive;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border 0.2s, background 0.2s;
+}
+
+.paint-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255,255,255,0.2);
+    transform: rotate(30deg);
+    opacity: 0;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.paint-button:hover::after {
+    opacity: 1;
+    transform: rotate(30deg) translate(-30%, -30%);
+}
+
+.paint-button:hover {
+    border: 3px inset black;
+    background: #EEE;
+}
+
+.paint-button:active {
+    transform: scale(0.95);
+}
+
+.big-button {
+    background: white;
+    border: 10px outset black;
+    padding: 10px 25px;
+    font-size: 25px;
+    cursor: pointer;
+    margin: 10px;
+    font-family: 'Comic Sans MS', bold;
+    animation: pulse 2s infinite;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border 0.2s, background 0.2s;
+}
+
+.big-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { left: -100%; }
+    20% { left: 100%; }
+    100% { left: 100%; }
+}
+
+.big-button:hover {
+    border: 10px inset black;
+    background: #EEE;
+    animation: none;
+}
+
+.big-button:active {
+    transform: scale(0.95);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* =========================================
+   Portal Content Styling
+   ========================================= */
+.quote-container {
+    border-left: 10px solid black;
+    padding-left: 10px;
+    margin: 20px;
+    text-align: left;
+}
+
+.author-link {
+    color: blue;
+    text-decoration: none;
+}
+
+.publication {
+    font-size: 10px;
+    color: #666;
+}
+
+.visitor-counter {
+    margin-top: 15px;
+    border: 1px solid #999;
+    display: inline-block;
+    padding: 5px;
+    background: #eee;
+}
+
+.counter-label {
+    font-family: Verdana;
+    font-size: 10px;
+}
+
+.counter-value {
+    font-family: 'Courier New';
+    background: black;
+    color: #33ff33;
+    padding: 2px 5px;
+}
+
+.web-badges {
+    margin-top: 20px;
+}
+
+.web-badges img {
+    margin: 0 5px;
+    vertical-align: middle;
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 10px;
+    color: #666;
+    border-top: 1px dashed #999;
+    padding-top: 10px;
+}
+
+.guestbook-link {
+    color: blue;
+    text-decoration: none;
+    font-family: Verdana;
+    font-size: 10px;
+}
+
+.guestbook-link img {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* =========================================
+   Ritual Interface Elements
+   ========================================= */
+#info {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    pointer-events: none;
+    text-shadow: 1px 1px 2px black;
+    z-index: 2;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+#timer {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+    font-size: 20px;
+    text-shadow: 0 0 5px #ffffff;
+    z-index: 2;
+    font-family: monospace;
+}
+
+#manifesto-scroll {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    color: white;
+    font-size: 12px;
+    width: 50%;
+    text-shadow: 0 0 5px #ffffff;
+    z-index: 2;
+    font-family: 'Times New Roman', serif;
+    overflow: hidden;
+    height: 80px;
+    padding: 5px;
+    background: rgba(0,0,0,0.3);
+    border-left: 1px solid rgba(255,255,255,0.2);
+}
+
+#controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 12px;
+    z-index: 2;
+    font-family: 'Courier New', monospace;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+#controls:hover {
+    opacity: 1;
+}
+
+#return-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+#return-button:hover {
+    opacity: 1;
+}
+
+/* =========================================
+   Visual Effects
+   ========================================= */
+.grain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 9999;
+}
+
+#vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 150px rgba(0,0,0,0.7);
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.5;
+    transition: opacity 2s, box-shadow 2s;
+}
+
+#scan-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(transparent 50%, rgba(0,0,0,0.05) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+}
+
+#atmospheric-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: overlay;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+    opacity: 0.3;
+}
+
+#page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 1;
+    transition: opacity 1s;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.floating-text {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Times New Roman', serif;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 3;
+    mix-blend-mode: difference;
+}
+
+.glitch {
+    animation: glitch-anim 0.3s infinite;
+}
+
+@keyframes glitch-anim {
+    0% { opacity: 1; transform: translate(0); }
+    20% { opacity: 1; transform: translate(-5px, 5px); }
+    40% { opacity: 1; transform: translate(5px, -5px); }
+    60% { opacity: 1; transform: translate(-5px, -5px); }
+    80% { opacity: 1; transform: translate(5px, 5px); }
+    100% { opacity: 1; transform: translate(0); }
+}
+
+/* =========================================
+   About Panel
+   ========================================= */
+#about-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white url('assets/backgrounds/marble.jpg');
+    border: 3px double black;
+    padding: 20px;
+    max-width: 500px;
+    z-index: 100;
+    box-shadow: 10px 10px 0px #555;
+    color: black;
+}
+
+#about-panel h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#about-panel p {
+    line-height: 1.6;
+}
+
+#about-panel .button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#about-link {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-family: 'Times New Roman';
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    z-index: 5;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#about-link:hover {
+    color: rgba(255,255,255,0.7);
+}
+
+/* =========================================
+   Accessibility Controls
+   ========================================= */
+#accessibility-controls {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    display: none;
+}
+
+#toggle-sound {
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#toggle-sound:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* =========================================
+   Ritual Elements
+   ========================================= */
+.ritual-symbol {
+    position: fixed;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
+    opacity: 0;
+    transition: opacity 3s;
+    pointer-events: none;
+    z-index: 4;
+    animation: fade-in-out 10s infinite ease-in-out;
+}
+
+#symbol1 {
+    top: 70%;
+    left: 15%;
+    --rotation: 15deg;
+    background: url('assets/icons/symbol1.gif');
+    width: 40px;
+    height: 40px;
+}
+
+#symbol2 {
+    top: 30%;
+    left: 80%;
+    --rotation: -10deg;
+    background: url('assets/icons/symbol2.gif');
+    width: 40px;
+    height: 40px;
+}
+
+#symbol3 {
+    top: 20%;
+    left: 25%;
+    --rotation: 5deg;
+    background: url('assets/icons/symbol3.gif');
+    width: 40px;
+    height: 40px;
+}
+
+@keyframes fade-in-out {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.1; }
+}
+
+.narrative-fragment {
+    position: fixed;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    max-width: 200px;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index: 6;
+}
+
+/* =========================================
+   Credits
+   ========================================= */
+#credits {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 3s;
+    pointer-events: none;
+}
+
+.credits-content {
+    text-align: center;
+    color: white;
+    font-family: 'Times New Roman', serif;
+    max-width: 600px;
+}
+
+.credits-content h2 {
+    margin-bottom: 50px;
+}
+
+.credits-subtitle {
+    margin: 30px 0;
+}
+
+.credits-creators {
+    margin: 30px 0;
+}
+
+.credits-manifesto {
+    margin: 30px 0;
+}
+
+.credits-thanks {
+    margin: 50px 0;
+}
+
+/* =========================================
+   Corner Flourishes
+   ========================================= */
+.corner-flourish {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+    opacity: 0.3;
+    z-index: 4;
+}
+
+#corner-tl {
+    top: 0;
+    left: 0;
+    background: url('assets/icons/corner-flourish.svg') no-repeat;
+}
+
+#corner-tr {
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+    background: url('assets/icons/corner-flourish.svg') no-repeat;
+}
+
+#corner-br {
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+    background: url('assets/icons/corner-flourish.svg') no-repeat;
+}
+
+#corner-bl {
+    bottom: 0;
+    left: 0;
+    transform: rotate(270deg);
+    background: url('assets/icons/corner-flourish.svg') no-repeat;
+}
+
+/* =========================================
+   Responsive Adjustments
+   ========================================= */
+@media (max-width: 768px) {
+    #portal {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .big-button {
+        font-size: 20px;
+        padding: 8px 20px;
+        border-width: 8px;
+    }
+    
+    #manifesto-scroll {
+        width: 70%;
+    }
+}
+
+@media (max-width: 480px) {
+    #portal {
+        width: 95%;
+        padding: 10px;
+    }
+    
+    .web-badges img {
+        width: 60px;
+        height: 21px;
+    }
+    
+    .big-button {
+        font-size: 18px;
+        padding: 6px 15px;
+        border-width: 6px;
+    }
+    
+    #manifesto-scroll {
+        display: none;
+    }
+    
+    #timer {
+        font-size: 16px;
+    }
+}
+
+/* =========================================
+   Animation Utilities
+   ========================================= */
+.breathing-element {
+    animation: subtle-breathing 5s infinite ease-in-out;
+}
+
+@keyframes subtle-breathing {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+/* Selection styling */
+::selection {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
