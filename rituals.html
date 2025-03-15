@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>welcome.</title>
+  <title>yes</title>
   <style>
     /* Reset and Mobile-First Design */
     body, html {
@@ -87,29 +87,14 @@
   </div>
 
   <script>
-    // Web Audio API Setup
-    let audioContext;
+    // Global variables
+    let audioContext = null;
     let isPlaying = false;
     let oscillator = null;
     let gainNode = null;
-    let pulseLength = null;
-  
-    // Initialize AudioContext on User Interaction
-    const initializeAudioContext = () => {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioContext.state === 'suspended') {
-        audioContext.resume(); // Ensure the context is running
-      }
-    };
-  
-    // Randomize Pulse Length on Page Load (between 3s and 15s)
-    const randomizePulseLength = () => {
-      pulseLength = Math.random() * (15 - 3) + 3; // Random pulse length between 3s and 15s
-    };
-    randomizePulseLength();
-  
+    let pulseInterval = null;
+    let pulseLength = Math.random() * (15 - 3) + 3; // Random pulse length between 3s and 15s
+
     // Logarithmic Frequency Mapping (100Hz to 15000Hz)
     const mapLogarithmicFrequency = (sliderValue) => {
       if (sliderValue <= 0.75) {
@@ -120,67 +105,80 @@
         return 10000 + ((sliderValue - 0.75) / 0.25) * 5000;
       }
     };
-  
+
     // Create Oscillator with ADSR Envelope
-    const startOscillator = () => {
-      oscillator = audioContext.createOscillator();
-      gainNode = audioContext.createGain();
-  
+    const createPulse = () => {
+      // Create a new oscillator for each pulse
+      const newOscillator = audioContext.createOscillator();
+      const newGainNode = audioContext.createGain();
+      
       // Configure Oscillator
-      oscillator.type = 'sine';
-      const initialFrequency = mapLogarithmicFrequency(parseFloat(document.getElementById('frequencySlider').value));
-      oscillator.frequency.setValueAtTime(initialFrequency, audioContext.currentTime);
-  
+      newOscillator.type = 'sine';
+      const frequency = mapLogarithmicFrequency(parseFloat(document.getElementById('frequencySlider').value));
+      newOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      
       // ADSR Envelope with Slight Rolloff Before Re-Attack
       const now = audioContext.currentTime;
-      gainNode.gain.setValueAtTime(0, now); // Start at 0
-      gainNode.gain.linearRampToValueAtTime(1, now + 0.1); // Attack
-      gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.5); // Decay
-      gainNode.gain.linearRampToValueAtTime(0.05, now + pulseLength - 0.1); // Sustain at low volume
-      gainNode.gain.linearRampToValueAtTime(0, now + pulseLength); // Slight rolloff before re-attack
-  
+      newGainNode.gain.setValueAtTime(0, now);
+      newGainNode.gain.linearRampToValueAtTime(1, now + 0.1); // Attack
+      newGainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.5); // Decay
+      newGainNode.gain.linearRampToValueAtTime(0.05, now + pulseLength - 0.2); // Sustain
+      newGainNode.gain.linearRampToValueAtTime(0, now + pulseLength - 0.1); // Rolloff
+      
       // Connect and Start
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.start();
+      newOscillator.connect(newGainNode);
+      newGainNode.connect(audioContext.destination);
+      newOscillator.start();
+      newOscillator.stop(audioContext.currentTime + pulseLength);
+      
+      // Store current oscillator and gain node
+      oscillator = newOscillator;
+      gainNode = newGainNode;
     };
-  
-    // Smoothly Adjust Frequency
-    const adjustFrequency = (newFrequency) => {
-      if (oscillator) {
-        oscillator.frequency.exponentialRampToValueAtTime(newFrequency, audioContext.currentTime + 0.1);
-      }
-    };
-  
-    // Play Button Logic
+
+    // Play Button Logic - iOS Compatible
     const playButton = document.getElementById('playButton');
-    playButton.addEventListener('click', () => {
-      initializeAudioContext(); // Ensure the AudioContext is active
-      if (!isPlaying) {
-        isPlaying = true;
-        playButton.textContent = '⏹';
-        startOscillator();
-  
-        // Schedule re-attacks based on pulseLength
-        const schedulePulses = () => {
-          setInterval(() => {
-            startOscillator();
-          }, pulseLength * 1000);
-        };
-        schedulePulses();
-      } else {
-        if (oscillator) oscillator.stop();
-        isPlaying = false;
-        playButton.textContent = '▶';
-      }
+    
+    // Use both touchstart and click for iOS and desktop
+    ['touchstart', 'click'].forEach(eventType => {
+      playButton.addEventListener(eventType, function(e) {
+        e.preventDefault(); // Prevent default behavior
+        
+        if (!isPlaying) {
+          // Create AudioContext only on user interaction
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Start playing
+          isPlaying = true;
+          playButton.textContent = '⏹';
+          
+          // Create initial pulse
+          createPulse();
+          
+          // Schedule recurring pulses
+          pulseInterval = setInterval(createPulse, pulseLength * 1000);
+        } else {
+          // Stop playing
+          isPlaying = false;
+          playButton.textContent = '▶';
+          
+          // Clear interval and stop audio
+          clearInterval(pulseInterval);
+          if (audioContext) {
+            audioContext.close(); // Close context to fully release audio resources
+            audioContext = null;
+          }
+        }
+      }, { once: false, passive: false });
     });
-  
+
     // Frequency Slider Logic
     const frequencySlider = document.getElementById('frequencySlider');
     frequencySlider.addEventListener('input', () => {
-      const sliderValue = parseFloat(frequencySlider.value);
-      const frequency = mapLogarithmicFrequency(sliderValue);
-      adjustFrequency(frequency);
+      if (oscillator && isPlaying) {
+        const frequency = mapLogarithmicFrequency(parseFloat(frequencySlider.value));
+        oscillator.frequency.exponentialRampToValueAtTime(frequency, audioContext.currentTime + 0.1);
+      }
     });
   </script>
 </body>
