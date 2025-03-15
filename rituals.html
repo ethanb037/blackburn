@@ -88,18 +88,28 @@
 
   <script>
     // Web Audio API Setup
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let audioContext;
     let isPlaying = false;
     let oscillator = null;
     let gainNode = null;
     let pulseLength = null;
-
+  
+    // Initialize AudioContext on User Interaction
+    const initializeAudioContext = () => {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume(); // Ensure the context is running
+      }
+    };
+  
     // Randomize Pulse Length on Page Load (between 3s and 15s)
     const randomizePulseLength = () => {
-      pulseLength = Math.random() * (8 - 3) + 3; // Random pulse length between 3s and 8s
+      pulseLength = Math.random() * (15 - 3) + 3; // Random pulse length between 3s and 15s
     };
     randomizePulseLength();
-
+  
     // Logarithmic Frequency Mapping (100Hz to 15000Hz)
     const mapLogarithmicFrequency = (sliderValue) => {
       if (sliderValue <= 0.75) {
@@ -110,17 +120,17 @@
         return 10000 + ((sliderValue - 0.75) / 0.25) * 5000;
       }
     };
-
+  
     // Create Oscillator with ADSR Envelope
     const startOscillator = () => {
       oscillator = audioContext.createOscillator();
       gainNode = audioContext.createGain();
-
+  
       // Configure Oscillator
       oscillator.type = 'sine';
       const initialFrequency = mapLogarithmicFrequency(parseFloat(document.getElementById('frequencySlider').value));
       oscillator.frequency.setValueAtTime(initialFrequency, audioContext.currentTime);
-
+  
       // ADSR Envelope with Slight Rolloff Before Re-Attack
       const now = audioContext.currentTime;
       gainNode.gain.setValueAtTime(0, now); // Start at 0
@@ -128,28 +138,29 @@
       gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.5); // Decay
       gainNode.gain.linearRampToValueAtTime(0.05, now + pulseLength - 0.1); // Sustain at low volume
       gainNode.gain.linearRampToValueAtTime(0, now + pulseLength); // Slight rolloff before re-attack
-
+  
       // Connect and Start
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       oscillator.start();
     };
-
+  
     // Smoothly Adjust Frequency
     const adjustFrequency = (newFrequency) => {
       if (oscillator) {
         oscillator.frequency.exponentialRampToValueAtTime(newFrequency, audioContext.currentTime + 0.1);
       }
     };
-
+  
     // Play Button Logic
     const playButton = document.getElementById('playButton');
     playButton.addEventListener('click', () => {
+      initializeAudioContext(); // Ensure the AudioContext is active
       if (!isPlaying) {
         isPlaying = true;
         playButton.textContent = '⏹';
         startOscillator();
-
+  
         // Schedule re-attacks based on pulseLength
         const schedulePulses = () => {
           setInterval(() => {
@@ -163,7 +174,7 @@
         playButton.textContent = '▶';
       }
     });
-
+  
     // Frequency Slider Logic
     const frequencySlider = document.getElementById('frequencySlider');
     frequencySlider.addEventListener('input', () => {
