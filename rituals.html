@@ -2,182 +2,387 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>yes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ambient Pulse</title>
   <style>
-    /* Reset and Mobile-First Design */
+    /* Modern, Mobile-First Design */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #121212;
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
     }
 
     #container {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 300px;
+      padding: 20px;
     }
 
     #playButton {
-      font-size: 2em;
-      padding: 15px 30px;
-      border: none;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #4CAF50, #45a049);
+      background: #4CAF50;
+      border: none;
       color: white;
+      font-size: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      -webkit-appearance: none;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-bottom: 20px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      outline: none;
     }
 
-    #playButton:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    #playButton:active {
+      transform: scale(0.95);
+      background: #3d8b40;
+    }
+
+    #sliderContainer {
+      width: 100%;
+      position: relative;
+      padding: 0 10px;
     }
 
     #frequencySlider {
       -webkit-appearance: none;
       appearance: none;
-      width: 200px;
+      width: 100%;
       height: 8px;
-      border-radius: 5px;
-      background: #444;
+      border-radius: 4px;
+      background: #333;
       outline: none;
-      opacity: 0.7;
-      transition: opacity 0.2s ease;
-    }
-
-    #frequencySlider:hover {
-      opacity: 1;
+      margin: 10px 0;
     }
 
     #frequencySlider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: #4CAF50;
       cursor: pointer;
+      border: 2px solid #333;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* Mobile Optimization */
-    @media (max-width: 600px) {
-      #playButton {
-        font-size: 1.5em;
-        padding: 12px 24px;
-      }
-
-      #frequencySlider {
-        width: 80px;
-      }
+    #frequencySlider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      border: 2px solid #333;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
   </style>
 </head>
-<body>
+<body ontouchstart="">
   <div id="container">
-    <button id="playButton">▶</button>
-    <input type="range" id="frequencySlider" min="0" max="1" step="0.01" value="0.147">
+    <button id="playButton" aria-label="Play">▶</button>
+    <div id="sliderContainer">
+      <input type="range" id="frequencySlider" min="0" max="1" step="0.001" value="0.2">
+    </div>
   </div>
 
   <script>
-    // Global variables
-    let audioContext = null;
-    let isPlaying = false;
-    let oscillator = null;
-    let gainNode = null;
-    let pulseInterval = null;
-    let pulseLength = Math.random() * (15 - 3) + 3; // Random pulse length between 3s and 15s
+    // Global State Management
+    const state = {
+      audioContext: null,
+      isPlaying: false,
+      currentOscillator: null,
+      currentGain: null,
+      pulseTimer: null,
+      pulseLength: null,
+      visibilityPaused: false
+    };
 
-    // Logarithmic Frequency Mapping (100Hz to 15000Hz)
-    const mapLogarithmicFrequency = (sliderValue) => {
-      if (sliderValue <= 0.75) {
-        // Map first 75% of slider to 100Hz - 10000Hz
-        return Math.pow(10, sliderValue / 0.75 * 2 + 2);
-      } else {
-        // Map remaining 25% to 10000Hz - 15000Hz
-        return 10000 + ((sliderValue - 0.75) / 0.25) * 5000;
+    // Generate a consistent pulse length on page load (3-15 seconds)
+    state.pulseLength = Math.random() * (15 - 3) + 3;
+    
+    // Audio Node Pool for reuse
+    const nodePool = {
+      oscillators: [],
+      gains: [],
+      // Get oscillator from pool or create new one
+      getOscillator: function(context) {
+        if (this.oscillators.length > 0) {
+          return this.oscillators.pop();
+        }
+        return context.createOscillator();
+      },
+      // Get gain node from pool or create new one
+      getGain: function(context) {
+        if (this.gains.length > 0) {
+          return this.gains.pop();
+        }
+        return context.createGain();
+      },
+      // Return nodes to pool
+      returnNodes: function(osc, gain) {
+        if (osc) this.oscillators.push(osc);
+        if (gain) this.gains.push(gain);
       }
     };
 
-    // Create Oscillator with ADSR Envelope
-    const createPulse = () => {
-      // Create a new oscillator for each pulse
-      const newOscillator = audioContext.createOscillator();
-      const newGainNode = audioContext.createGain();
-      
-      // Configure Oscillator
-      newOscillator.type = 'sine';
-      const frequency = mapLogarithmicFrequency(parseFloat(document.getElementById('frequencySlider').value));
-      newOscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-      
-      // ADSR Envelope with Slight Rolloff Before Re-Attack
-      const now = audioContext.currentTime;
-      newGainNode.gain.setValueAtTime(0, now);
-      newGainNode.gain.linearRampToValueAtTime(1, now + 0.1); // Attack
-      newGainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.5); // Decay
-      newGainNode.gain.linearRampToValueAtTime(0.05, now + pulseLength - 0.2); // Sustain
-      newGainNode.gain.linearRampToValueAtTime(0, now + pulseLength - 0.1); // Rolloff
-      
-      // Connect and Start
-      newOscillator.connect(newGainNode);
-      newGainNode.connect(audioContext.destination);
-      newOscillator.start();
-      newOscillator.stop(audioContext.currentTime + pulseLength);
-      
-      // Store current oscillator and gain node
-      oscillator = newOscillator;
-      gainNode = newGainNode;
-    };
+    // Optimized exponential frequency mapping (100Hz to 15000Hz)
+    function calculateFrequency(normalizedValue) {
+      // Use a more efficient logarithmic calculation
+      if (normalizedValue <= 0.75) {
+        return 100 * Math.pow(100, normalizedValue / 0.75);
+      } else {
+        const factor = (normalizedValue - 0.75) / 0.25;
+        return 10000 + factor * 5000;
+      }
+    }
 
-    // Play Button Logic - iOS Compatible
-    const playButton = document.getElementById('playButton');
-    
-    // Use both touchstart and click for iOS and desktop
-    ['touchstart', 'click'].forEach(eventType => {
-      playButton.addEventListener(eventType, function(e) {
-        e.preventDefault(); // Prevent default behavior
+    // More efficient ADSR implementation with better mobile performance
+    function createAndSchedulePulse() {
+      if (!state.audioContext || !state.isPlaying) return;
+      
+      // Clean up previous nodes to prevent memory leaks
+      if (state.currentOscillator) {
+        try {
+          state.currentOscillator.stop();
+        } catch (e) {
+          // Ignore errors from already stopped oscillators
+        }
+      }
+
+      // Get frequency value
+      const frequencyValue = parseFloat(document.getElementById('frequencySlider').value);
+      const frequency = calculateFrequency(frequencyValue);
+      
+      // Create new audio nodes
+      const osc = state.audioContext.createOscillator();
+      const gainNode = state.audioContext.createGain();
+      
+      // Configure oscillator
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(frequency, state.audioContext.currentTime);
+      
+      // Connect nodes
+      osc.connect(gainNode);
+      gainNode.connect(state.audioContext.destination);
+      
+      // Precise envelope timing
+      const now = state.audioContext.currentTime;
+      
+      // Start with silence
+      gainNode.gain.setValueAtTime(0, now);
+      
+      // Attack phase - rapid rise
+      gainNode.gain.linearRampToValueAtTime(0.8, now + 0.02);
+      
+      // Decay phase - fall to sustain level
+      gainNode.gain.exponentialRampToValueAtTime(0.2, now + 0.3);
+      
+      // Sustain phase - hold at low level
+      gainNode.gain.linearRampToValueAtTime(0.1, now + state.pulseLength - 0.5);
+      
+      // Release phase - clean rolloff before next pulse
+      gainNode.gain.linearRampToValueAtTime(0.001, now + state.pulseLength); // Avoid 0 for exponentialRamp
+      
+      // Start the oscillator
+      osc.start(now);
+      
+      // Store references
+      state.currentOscillator = osc;
+      state.currentGain = gainNode;
+      
+      // Schedule next pulse
+      clearTimeout(state.pulseTimer);
+      state.pulseTimer = setTimeout(createAndSchedulePulse, state.pulseLength * 1000);
+    }
+
+    // Mobile-friendly initialization
+    function initializeAudio() {
+      // Create new AudioContext if needed
+      if (!state.audioContext) {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        state.audioContext = new AudioContext();
+      }
+      
+      // Make sure context is running
+      if (state.audioContext.state === 'suspended') {
+        state.audioContext.resume();
+      }
+    }
+
+    // Specialized iOS touch handlers
+    function setupIOSAudioSession() {
+      // iOS requires user interaction to start audio
+      document.addEventListener('touchend', function() {
+        if (state.audioContext && state.audioContext.state === 'suspended') {
+          state.audioContext.resume();
+        }
+      }, {once: true});
+      
+      // Unlock audio on iOS Safari
+      window.addEventListener('touchstart', function() {
+        if (!state.audioContext) return;
         
-        if (!isPlaying) {
-          // Create AudioContext only on user interaction
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Play and immediately stop a silent buffer
+        const buffer = state.audioContext.createBuffer(1, 1, 22050);
+        const source = state.audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(state.audioContext.destination);
+        source.start(0);
+        source.stop(0);
+        
+        // Remove this listener once unlocked
+        this.removeEventListener('touchstart', arguments.callee);
+      }, {once: true, passive: true});
+    }
+
+    // Handle visibility changes (tab switching, app background)
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        // Page is hidden - pause audio processing to save battery
+        if (state.isPlaying && !state.visibilityPaused) {
+          state.visibilityPaused = true;
+          clearTimeout(state.pulseTimer);
           
-          // Start playing
-          isPlaying = true;
-          playButton.textContent = '⏹';
-          
-          // Create initial pulse
-          createPulse();
-          
-          // Schedule recurring pulses
-          pulseInterval = setInterval(createPulse, pulseLength * 1000);
-        } else {
-          // Stop playing
-          isPlaying = false;
-          playButton.textContent = '▶';
-          
-          // Clear interval and stop audio
-          clearInterval(pulseInterval);
-          if (audioContext) {
-            audioContext.close(); // Close context to fully release audio resources
-            audioContext = null;
+          if (state.audioContext && state.audioContext.state === 'running') {
+            state.audioContext.suspend();
           }
         }
-      }, { once: false, passive: false });
+      } else {
+        // Page is visible again - resume if we were playing
+        if (state.isPlaying && state.visibilityPaused) {
+          state.visibilityPaused = false;
+          
+          if (state.audioContext) {
+            state.audioContext.resume().then(() => {
+              createAndSchedulePulse();
+            });
+          }
+        }
+      }
+    }
+
+    // Toggle play/pause state
+    function togglePlay() {
+      if (!state.isPlaying) {
+        // Start playing
+        initializeAudio();
+        state.isPlaying = true;
+        document.getElementById('playButton').textContent = '⏹';
+        createAndSchedulePulse();
+      } else {
+        // Stop playing
+        state.isPlaying = false;
+        document.getElementById('playButton').textContent = '▶';
+        clearTimeout(state.pulseTimer);
+        
+        if (state.currentOscillator) {
+          const now = state.audioContext.currentTime;
+          // Fade out gracefully
+          state.currentGain.gain.cancelScheduledValues(now);
+          state.currentGain.gain.setValueAtTime(state.currentGain.gain.value, now);
+          state.currentGain.gain.linearRampToValueAtTime(0, now + 0.1);
+          
+          // Stop after fade
+          setTimeout(() => {
+            if (state.currentOscillator) {
+              try {
+                state.currentOscillator.stop();
+              } catch (e) {
+                // Ignore errors if already stopped
+              }
+              state.currentOscillator = null;
+              state.currentGain = null;
+            }
+          }, 150);
+        }
+      }
+    }
+
+    // Set up event listeners when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Play button event handlers for both mobile and desktop
+      const playButton = document.getElementById('playButton');
+      
+      // Handle click events (desktop)
+      playButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        togglePlay();
+      });
+      
+      // Handle touch events (mobile)
+      playButton.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        togglePlay();
+        // Prevent double-firing on devices that trigger both touch and click
+        e.stopPropagation();
+      }, {passive: false});
+      
+      // Frequency slider changes
+      const frequencySlider = document.getElementById('frequencySlider');
+      
+      ['input', 'change'].forEach(function(evt) {
+        frequencySlider.addEventListener(evt, function() {
+          if (state.isPlaying && state.currentOscillator) {
+            const frequencyValue = parseFloat(this.value);
+            const frequency = calculateFrequency(frequencyValue);
+            
+            // Update frequency with proper ramp to avoid glitches
+            const now = state.audioContext.currentTime;
+            state.currentOscillator.frequency.cancelScheduledValues(now);
+            state.currentOscillator.frequency.setValueAtTime(state.currentOscillator.frequency.value, now);
+            state.currentOscillator.frequency.exponentialRampToValueAtTime(frequency, now + 0.05);
+          }
+        });
+      });
+      
+      // Page visibility handling for battery optimization
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Setup iOS-specific audio session
+      setupIOSAudioSession();
+      
+      // Prevent touch scrolling/zooming issues
+      document.addEventListener('touchmove', function(e) {
+        if (e.target.id === 'frequencySlider') {
+          e.stopPropagation();
+        }
+      }, {passive: true});
     });
 
-    // Frequency Slider Logic
-    const frequencySlider = document.getElementById('frequencySlider');
-    frequencySlider.addEventListener('input', () => {
-      if (oscillator && isPlaying) {
-        const frequency = mapLogarithmicFrequency(parseFloat(frequencySlider.value));
-        oscillator.frequency.exponentialRampToValueAtTime(frequency, audioContext.currentTime + 0.1);
+    // Handle page unload to clean up resources
+    window.addEventListener('beforeunload', function() {
+      if (state.audioContext) {
+        clearTimeout(state.pulseTimer);
+        if (state.currentOscillator) {
+          try {
+            state.currentOscillator.stop();
+          } catch (e) {
+            // Ignore errors
+          }
+        }
+        state.audioContext.close();
       }
     });
   </script>
