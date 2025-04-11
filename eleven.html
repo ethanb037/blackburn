@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>11th hour</title>
+    <style>
+        /* Reset & Minimalist Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        @font-face {
+            font-family: 'SpaceMono';
+            src: url('https://fonts.gstatic.com/s/spacemono/v6/i7dPIFZifjKcF5UAWdDRYEF8RQ.woff2') format('woff2');
+            font-display: swap;
+        }
+        
+        :root {
+            --text-color: rgba(22, 22, 26, 0.85);
+            --bg-color: #fcfcfc;
+            --input-bg: rgba(246, 246, 246, 0.9);
+            --highlight: rgba(180, 180, 180, 0.2);
+            --system-phase: 'alpha';
+        }
+        
+        body {
+            font-family: 'SpaceMono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            touch-action: manipulation;
+            position: fixed;
+            transition: background-color 2s ease;
+        }
+        
+        /* Container */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Welcome Screen */
+        .welcome {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color);
+            z-index: 10;
+            padding: 5vw;
+            transition: opacity 0.8s ease-in-out;
+        }
+        
+        .welcome h1 {
+            font-weight: 400;
+            font-size: 10vw;
+            margin-bottom: 4vh;
+            letter-spacing: -0.05em;
+        }
+        
+        .welcome p {
+            font-size: 4vw;
+            margin-bottom: 10vh;
+            opacity: 0.7;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .welcome button {
+            background: none;
+            border: 1px solid #222;
+            padding: 3vw 8vw;
+            font-family: inherit;
+            font-size: 4vw;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Sound Canvas */
+        .sound-canvas {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+            transition: background-color 3s ease;
+        }
+        
+        /* Word Elements */
+        .word-element {
+            position: absolute;
+            font-size: min(16px, 4vw);
+            color: var(--text-color);
+            pointer-events: all;
+            padding: 2.5vw 3.5vw;
+            border-radius: 2px;
+            transition: all 0.3s ease, background-color 2s ease, box-shadow 2s ease;
+            background-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.03);
+            transform-origin: center;
+            will-change: transform, opacity;
+            backdrop-filter: blur(2px);
+            letter-spacing: 0.03em;
+        }
+        
+        .word-element:active {
+            transform: scale(1.2);
+        }
+        
+        /* Phase indicator */
+        .word-element::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--tone-color, rgba(120, 120, 120, 0.3));
+            transition: background-color 2s ease;
+        }
+        
+        /* Parameter indicator */
+        .word-element::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 1px;
+            background: var(--text-color);
+            opacity: 0.08;
+            width: 100%;
+            transform-origin: left;
+            transform: scaleX(var(--param-scale, 0.5));
+            transition: transform 2s ease;
+        }
+        
+        /* Input Area */
+        .input-area {
+            height: 12vh;
+            width: 100%;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4vw;
+            transition: border-color 2s ease;
+        }
+        
+        .input-container {
+            width: 100%;
+            position: relative;
+        }
+        
+        #textInput {
+            width: 100%;
+            padding: 3vw;
+            border: none;
+            background-color: var(--input-bg);
+            font-family: inherit;
+            font-size: 4.5vw;
+            outline: none;
+            border-radius: 2px;
+            letter-spacing: 0.02em;
+            transition: background-color 2s ease;
+        }
+        
+        /* Controls */
+        .controls {
+            position: absolute;
+            top: 2vw;
+            left: 2vw;
+            right: 2vw;
+            display: flex;
+            justify-content: space-between;
+            z-index: 5;
+        }
+        
+        .control-button {
+            background: none;
+            border: none;
+            width: 10vw;
+            height: 10vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5vw;
+            opacity: 0.4;
+            transition: opacity 0.2s;
+        }
+        
+        /* System Phase Indicator */
+        .phase-indicator {
+            position: absolute;
+            bottom: 14vh;
+            left: 4vw;
+            font-size: 3.5vw;
+            opacity: 0.4;
+            pointer-events: none;
+            letter-spacing: 0.05em;
+            transition: opacity 3s ease;
+        }
+        
+        /* Countdown Timer */
+        .timer {
+            position: absolute;
+            bottom: 14vh;
+            right: 4vw;
+            font-size: 3.5vw;
+            opacity: 0.4;
+            pointer-events: none;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Particles */
+        .particle {
+            position: absolute;
+            border-radius: 1px;
+            pointer-events: none;
+            will-change: transform, opacity;
+            mix-blend-mode: multiply;
+        }
+        
+        /* Phase-specific styling */
+        .phase-alpha {
+            --phase-accent: rgba(100, 130, 200, 0.5);
+        }
+        
+        .phase-beta {
+            --phase-accent: rgba(130, 200, 100, 0.5);
+        }
+        
+        .phase-gamma {
+            --phase-accent: rgba(200, 100, 130, 0.5);
+        }
+        
+        .phase-delta {
+            --phase-accent: rgba(230, 180, 80, 0.5);
+        }
+        
+        .phase-epsilon {
+            --phase-accent: rgba(140, 140, 190, 0.5);
+        }
+        
+        /* Spectrogram */
+        .spectrogram {
+            position: absolute;
+            bottom: 13vh;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        /* Hidden Helper */
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="phase-alpha">
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div class="welcome" id="welcomeScreen">
+            <h1>prose vertonen</h1>
+            <p>type words and blend with others.<br>wait.</p>
+            <button id="beginButton">enter</button>
+        </div>
+        
+        <!-- Main Interface -->
+        <div class="sound-canvas" id="soundCanvas"></div>
+        
+        <div class="input-area">
+            <div class="input-container">
+                <input type="text" id="textInput" placeholder="type words, press enter..." autocomplete="off" autocapitalize="off">
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-button" id="clearButton">⊗</button>
+            <button class="control-button" id="infoButton">?</button>
+        </div>
+        
+        <!-- System Phase Indicator -->
+        <div class="phase-indicator" id="phaseIndicator">number</div>
+        
+        <!-- Timer for phase change -->
+        <div class="timer" id="phaseTimer">5:00</div>
+        
+        <!-- Canvas for spectrogram -->
+        <canvas id="spectrogram" class="spectrogram"></canvas>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements
+            const body = document.querySelector('body');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const beginButton = document.getElementById('beginButton');
+            const soundCanvas = document.getElementById('soundCanvas');
+            const textInput = document.getElementById('textInput');
+            const clearButton = document.getElementById('clearButton');
+            const infoButton = document.getElementById('infoButton');
+            const phaseIndicator = document.getElementById('phaseIndicator');
+            const phaseTimer = document.getElementById('phaseTimer');
+            const spectrogramCanvas = document.getElementById('spectrogram');
+            
+            // Audio Context and nodes
+            let audioContext;
+            let masterGain;
+            let masterReverb;
+            let masterDelay;
+            let masterCompressor;
+            let analyser;
+            let audioInitialized = false;
+            
+            // Sound tracking
+            let activeElements = [];
+            
+            // System phase management
+            const phases = ['alpha', 'beta', 'gamma', 'delta', 'epsilon'];
+            let currentPhase = 0;
+            let phaseStartTime = 0;
+            let phaseInterval;
+            const phaseDuration = 5 * 60 * 1000; // 5 minutes in milliseconds
+            
+            // High entropy sound parameter mapping functions - defined BEFORE systemState
+            function generatePhaseParameters(phaseName, cycleSeed) {
+                // Generate a unique seed for this phase
+                let phaseSeed = phaseName.split('').reduce((a, b) => a + b.charCodeAt(0), 0) + cycleSeed;
+                
+                // Use the seed to create phase-specific pseudorandom numbers
+                const prng = function() {
+                    phaseSeed = (phaseSeed * 9301 + 49297) % 233280;
+                    return phaseSeed / 233280;
+                };
+                
+                // Tone colors for visualization - phase specific
+                let toneColors = {};
+                
+                // Create a color palette based on the phase
+                const baseHue = (phaseSeed % 360);
+                const toneNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                
+                toneNames.forEach((tone, i) => {
+                    const hue = (baseHue + (i * 30)) % 360;
+                    const saturation = 70 + (prng() * 20);
+                    const lightness = 70 + (prng() * 15);
+                    toneColors[tone] = `hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+                });
+                
+                // Generate initial microtonal scale offsets (0 = normal, non-zero = microtonal)
+                const microtonalOffsets = {};
+                toneNames.forEach(tone => {
+                    // 30% chance of microtonal adjustments
+                    if (prng() < 0.7) {
+                        // Random offset between -30 and 30 cents
+                        microtonalOffsets[tone] = (prng() * 60 - 30);
+                    } else {
+                        microtonalOffsets[tone] = 0;
+                    }
+                });
+                
+                // Generate base frequencies with potential microtonal adjustments
+                const generateFrequencies = (baseFreq, count) => {
+                    const freqs = [];
+                    for (let i = 0; i < count; i++) {
+                        freqs.push(baseFreq * Math.pow(2, i/12));
+                    }
+                    return freqs;
+                };
+                
+                // Create base scales for all 12 keys
+                const scales = {};
+                toneNames.forEach((tone, i) => {
+                    // Different base frequency for each key
+                    const baseFreq = 110 * Math.pow(2, i/12); // Start from A2
+                    scales[tone] = generateFrequencies(baseFreq, 36); // 3 octaves
+                });
+                
+                // Scale/mode patterns - varied by phase
+                let scaleModes = {};
+                
+                // Different phases emphasize different modes
+                if (phaseName === 'alpha') {
+                    scaleModes = {
+                        major: [0, 2, 4, 5, 7, 9, 11, 12, 14],
+                        minor: [0, 2, 3, 5, 7, 8, 10, 12, 14],
+                        pentatonic: [0, 2, 4, 7, 9, 12, 14, 16, 19],
+                        chromatic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                    };
+                } 
+                else if (phaseName === 'beta') {
+                    scaleModes = {
+                        dorian: [0, 2, 3, 5, 7, 9, 10, 12, 14],
+                        lydian: [0, 2, 4, 6, 7, 9, 11, 12, 14],
+                        mixolydian: [0, 2, 4, 5, 7, 9, 10, 12, 14],
+                        diminished: [0, 2, 3, 5, 6, 8, 9, 11, 12]
+                    };
+                }
+                else if (phaseName === 'gamma') {
+                    scaleModes = {
+                        harmonic: [0, 2, 3, 5, 7, 8, 11, 12, 14],
+                        hexatonic: [0, 3, 4, 7, 8, 11, 12, 15, 16],
+                        wholetone: [0, 2, 4, 6, 8, 10, 12, 14, 16],
+                        gypsy: [0, 2, 3, 6, 7, 8, 11, 12, 14]
+                    };
+                }
+                else if (phaseName === 'delta') {
+                    scaleModes = {
+                        augmented: [0, 3, 4, 7, 8, 11, 12, 15, 16],
+                        prometheus: [0, 2, 4, 6, 9, 10, 12, 14, 16],
+                        enigmatic: [0, 1, 4, 6, 8, 10, 11, 12, 13],
+                        acoustic: [0, 2, 4, 6, 7, 9, 10, 12, 14]
+                    };
+                }
+                else {
+                    scaleModes = {
+                        hirajoshi: [0, 2, 3, 7, 8, 12, 14, 15, 19],
+                        insen: [0, 1, 5, 7, 10, 12, 13, 17, 19],
+                        iwato: [0, 1, 5, 6, 10, 12, 13, 17, 18],
+                        arabian: [0, 2, 4, 5, 6, 8, 10, 12, 14]
+                    };
+                }
+                
+                // Create sine-based timbres with subtle variations
+                let waveforms;
+                
+                if (phaseName === 'alpha') {
+                    waveforms = ['sine', ['sine', 'sine'], ['sine', 'sine', 'sine']];
+                } else if (phaseName === 'beta') {
+                    // Detuned sines create beautiful beating patterns
+                    waveforms = [
+                        ['sine', 'sine'], // Slightly detuned
+                        ['sine', 'sine', 'sine'], // Tripling
+                        ['sine', 'sine', 'sine', 'sine'] // Quadrupling
+                    ];
+                } else if (phaseName === 'gamma') {
+                    // Sine with subtle modulation
+                    waveforms = ['sine-fm', 'sine-am', 'sine-ring'];
+                } else if (phaseName === 'delta') {
+                    // Sine with filtered noise modulation
+                    waveforms = ['sine-noise', 'sine-grain', 'sine-pulse'];
+                } else {
+                    // Complex sine combinations
+                    waveforms = [
+                        ['sine-am', 'sine-fm'],
+                        ['sine-ring', 'sine-noise'],
+                        ['sine-pulse', 'sine-grain', 'sine']
+                    ];
+                }
+                
+                // Rhythm definitions - varying by phase
+                const rhythmRanges = [];
+                
+                // Create 8 different rhythm patterns with varying complexity
+                for (let i = 0; i < 8; i++) {
+                    const pattern = [];
+                    const patternLength = 3 + Math.floor(prng() * 5); // 3-7 beats
+                    
+                    for (let j = 0; j < patternLength; j++) {
+                        // Vary note durations between 0.25 and 2
+                        pattern.push(0.25 + Math.floor(prng() * 8) / 4);
+                    }
+                    
+                    rhythmRanges.push(pattern);
+                }
+                
+                // Create unique envelope shapes for this phase
+                const envelopes = [];
+                
+                // Generate 6 different envelope shapes
+                for (let i = 0; i < 6; i++) {
+                    envelopes.push({
+                        attack: 0.01 + (prng() * 2), // 0.01-2s
+                        decay: 0.05 + (prng() * 1), // 0.05-1.05s
+                        sustain: 0.1 + (prng() * 0.8), // 0.1-0.9
+                        release: 0.1 + (prng() * 3) // 0.1-3.1s
+                    });
+                }
+                
+                // Filter options - more ambient filters
+                const filterTypes = ['lowpass', 'highpass', 'bandpass', 'notch', 'allpass'];
+                
+                // Generate modulation types specific to this phase
+                const modulationTypes = [];
+                
+                for (let i = 0; i < 5; i++) {
+                    modulationTypes.push({
+                        type: ['none', 'fm', 'am', 'ring', 'pulse', 'grain'][Math.floor(prng() * 6)],
+                        rate: 0.1 + (prng() * 8), // 0.1-8.1 Hz
+                        depth: 1 + (prng() * 50) // 1-51 units (depends on type)
+                    });
+                }
+                
+                // Return the phase configuration
+                return {
+                    name: phaseName,
+                    seed: phaseSeed,
+                    toneColors: toneColors,
+                    toneNames: toneNames,
+                    microtonalOffsets: microtonalOffsets,
+                    scales: scales,
+                    scaleModes: scaleModes,
+                    scaleNames: Object.keys(scaleModes),
+                    rhythmRanges: rhythmRanges,
+                    waveforms: waveforms,
+                    envelopes: envelopes,
+                    filterTypes: filterTypes,
+                    modulationTypes: modulationTypes,
+                    
+                    // Audio processing profiles for this phase
+                    audioProfiles: {
+                        // Phase-specific gain level
+                        gain: 0.4 + (prng() * 0.4), // 0.4-0.8
+                        
+                        // Reverb characteristics
+                        reverb: {
+                            duration: 1 + (prng() * 4), // 1-5s
+                            decay: 0.1 + (prng() * 0.8) // 0.1-0.9
+                        },
+                        
+                        // Delay settings
+                        delay: {
+                            time: 0.1 + (prng() * 0.7), // 0.1-0.8s
+                            feedback: 0.05 + (prng() * 0.4) // 0.05-0.45
+                        },
+                        
+                        // Compression settings
+                        compression: {
+                            threshold: -30 + (prng() * 15), // -30 to -15 dB
+                            ratio: 2 + (prng() * 6) // 2:1 to 8:1
+                        }
+                    }
+                };
+            }
+            
+            // System state - NOW WITH PROPER INITIALIZATION
+            const systemState = {
+                entropyLevel: Math.random(), // Randomness factor between 0-1
+                phaseStartTimestamp: Date.now(),
+                cycle: Math.floor(Math.random() * 1000), // Cycle identifier
+                
+                // Cache for phase parameters
+                _phaseParams: {},
+                
+                // Method to get or generate phase parameters
+                getPhaseParams: function(phaseName) {
+                    if (!this._phaseParams[phaseName]) {
+                        this._phaseParams[phaseName] = generatePhaseParameters(phaseName, this.cycle);
+                    }
+                    return this._phaseParams[phaseName];
+                },
+                
+                // Phase parameter accessors
+                get alpha() { return this.getPhaseParams('alpha'); },
+                get beta() { return this.getPhaseParams('beta'); },
+                get gamma() { return this.getPhaseParams('gamma'); },
+                get delta() { return this.getPhaseParams('delta'); },
+                get epsilon() { return this.getPhaseParams('epsilon'); }
+            };
+            
+            // Initialize audio
+            const initAudio = () => {
+                if (audioInitialized) return;
+                
+                // Create audio context
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Apply current phase audio profile immediately
+                updateAudioGraph();
+                
+                // Initialize spectrogram
+                initSpectrogram();
+                
+                audioInitialized = true;
+                console.log(`Audio initialized with ${phases[currentPhase]} phase parameters`);
+            };
+            
+            // Initialize spectrogram visualization
+            const initSpectrogram = () => {
+                const canvas = spectrogramCanvas;
+                const ctx = canvas.getContext('2d');
+                
+                // Resize to fit container
+                canvas.width = window.innerWidth;
+                canvas.height = 60;
+                
+                // Create analyzer
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 1024;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                // Connect analyzer to master output
+                masterCompressor.connect(analyser);
+                
+                // Phase-specific visualization styles
+                let currentPhaseName = phases[currentPhase];
+                let hueOffset = 0;
+                
+                if (currentPhaseName === 'alpha') hueOffset = 240; // Blue
+                else if (currentPhaseName === 'beta') hueOffset = 120; // Green
+                else if (currentPhaseName === 'gamma') hueOffset = 300; // Purple
+                else if (currentPhaseName === 'delta') hueOffset = 40; // Orange
+                else hueOffset = 180; // Teal
+                
+                function drawSpectrum() {
+                    requestAnimationFrame(drawSpectrum);
+                    
+                    if (!analyser) return;
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Phase-specific drawing style
+                    currentPhaseName = phases[currentPhase];
+                    
+                    if (currentPhaseName === 'alpha') {
+                        // Smooth, flowing spectrum
+                        drawFlowingSpectrum(ctx, dataArray, bufferLength, canvas, 240);
+                    } else if (currentPhaseName === 'beta') {
+                        // Structured bars
+                        drawStructuredSpectrum(ctx, dataArray, bufferLength, canvas, 120);
+                    } else if (currentPhaseName === 'gamma') {
+                        // Microtonal-inspired complex lines
+                        drawComplexSpectrum(ctx, dataArray, bufferLength, canvas, 300);
+                    } else if (currentPhaseName === 'delta') {
+                        // Atmospheric clouds
+                        drawCloudSpectrum(ctx, dataArray, bufferLength, canvas, 40);
+                    } else {
+                        // Layered, complex visualization
+                        drawLayeredSpectrum(ctx, dataArray, bufferLength, canvas, 180);
+                    }
+                }
+                
+                drawSpectrum();
+            };
+            
+            // Update audio processing graph based on current phase
+            const updateAudioGraph = async () => {
+                if (!audioContext) return;
+                
+                const currentParams = systemState[phases[currentPhase]];
+                const profile = currentParams.audioProfiles;
+                
+                // Create new audio nodes
+                
+                // Compressor
+                masterCompressor = audioContext.createDynamicsCompressor();
+                masterCompressor.threshold.value = profile.compression.threshold;
+                masterCompressor.knee.value = 12;
+                masterCompressor.ratio.value = profile.compression.ratio;
+                masterCompressor.attack.value = 0.003;
+                masterCompressor.release.value = 0.25;
+                
+                // Master gain
+                masterGain = audioContext.createGain();
+                masterGain.gain.value = profile.gain;
+                
+                // Create reverb
+                masterReverb = await createReverb(profile.reverb.duration, profile.reverb.decay);
+                
+                // Create delay
+                masterDelay = audioContext.createDelay();
+                masterDelay.delayTime.value = profile.delay.time;
+                
+                const delayFeedback = audioContext.createGain();
+                delayFeedback.gain.value = profile.delay.feedback;
+                
+                // Connect the graph
+                masterGain.connect(masterDelay);
+                masterDelay.connect(delayFeedback);
+                delayFeedback.connect(masterDelay);
+                masterDelay.connect(masterReverb);
+                masterGain.connect(masterReverb);
+                masterReverb.connect(masterCompressor);
+                masterCompressor.connect(audioContext.destination);
+                
+                // If we already have an analyzer, reconnect it
+                if (analyser) {
+                    masterCompressor.connect(analyser);
+                }
+                
+                console.log(`Audio graph updated for ${phases[currentPhase]} phase`);
+            };
+            
+            // Create reverb impulse response based on phase parameters
+            const createReverb = async (duration, decayFactor) => {
+                const reverb = audioContext.createConvolver();
+                const impulseLength = audioContext.sampleRate * duration;
+                const impulse = audioContext.createBuffer(2, impulseLength, audioContext.sampleRate);
+                
+                // Phase-specific impulse response character
+                const phase = phases[currentPhase];
+                
+                for (let channel = 0; channel < 2; channel++) {
+                    const impulseData = impulse.getChannelData(channel);
+                    
+                    // Each phase has a different reverb character
+                    if (phase === 'alpha') {
+                        // Smooth, gradual decay
+                        for (let i = 0; i < impulseLength; i++) {
+                            const phase = i / impulseLength;
+                            impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - phase, 1.5);
+                        }
+                    } 
+                    else if (phase === 'beta') {
+                        // More defined early reflections
+                        for (let i = 0; i < impulseLength; i++) {
+                            const phase = i / impulseLength;
+                            impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - phase, 1.2);
+                            
+                            // Add early reflections
+                            if (i < impulseLength * 0.1) {
+                                if (i % 4000 < 200) {
+                                    impulseData[i] *= 1.8;
+                                }
+                            }
+                        }
+                    }
+                    else if (phase === 'gamma') {
+                        // Modulated, complex decay
+                        for (let i = 0; i < impulseLength; i++) {
+                            const phase = i / impulseLength;
+                            impulseData[i] = (Math.random() * 2 - 1) * 
+                                             Math.pow(1 - phase, 1.4) * 
+                                             (0.6 + 0.4 * Math.sin(phase * 20));
+                        }
+                    }
+                    else if (phase === 'delta') {
+                        // Diffuse, atmospheric
+                        for (let i = 0; i < impulseLength; i++) {
+                            const phase = i / impulseLength;
+                            impulseData[i] = (Math.random() * 2 - 1) * 
+                                             Math.pow(1 - phase, 1.7) *
+                                             (1 - 0.3 * Math.sin(phase * 7));
+                        }
+                    }
+                    else {
+                        // Dense, layered
+                        for (let i = 0; i < impulseLength; i++) {
+                            const phase = i / impulseLength;
+                            impulseData[i] = (Math.random() * 2 - 1) * 
+                                             Math.pow(1 - phase, 1.9) *
+                                             (0.7 + 0.3 * (Math.sin(phase * 9) + Math.sin(phase * 13)));
+                        }
+                    }
+                    
+                    // Apply decay factor
+                    for (let i = 0; i < impulseLength; i++) {
+                        impulseData[i] *= Math.pow(decayFactor, (i / impulseLength) * 10);
+                    }
+                }
+                
+                reverb.buffer = impulse;
+                return reverb;
+            };
+            
+            // Spectrogram drawing functions - phase-specific visualizations
+            function drawFlowingSpectrum(ctx, dataArray, bufferLength, canvas, hueBase) {
+                // Alpha phase: Smooth, flowing spectrum with gentle curves
+                ctx.beginPath();
+                const sliceWidth = canvas.width / bufferLength * 3;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 256.0;
+                    const y = canvas.height - (v * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                // Complete the path
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                
+                // Create subtle gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, `hsla(${hueBase}, 80%, 70%, 0.4)`);
+                gradient.addColorStop(1, `hsla(${hueBase}, 80%, 70%, 0)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Add subtle line on top
+                ctx.beginPath();
+                x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 256.0;
+                    const y = canvas.height - (v * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.strokeStyle = `hsla(${hueBase}, 80%, 75%, 0.3)`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+            
+            function drawStructuredSpectrum(ctx, dataArray, bufferLength, canvas, hueBase) {
+                // Beta phase: More structured, architectural visualization
+                const barWidth = canvas.width / (bufferLength / 3);
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i += 3) {
+                    const v = dataArray[i] / 256.0;
+                    const barHeight = v * canvas.height * 0.8;
+                    
+                    // Hue variation based on frequency
+                    const hue = hueBase + (i / bufferLength * 30);
+                    
+                    // Draw vertical bar
+                    ctx.fillStyle = `hsla(${hue}, 80%, 60%, ${v * 0.5})`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+                    
+                    x += barWidth;
+                }
+                
+                // Add connecting line
+                ctx.beginPath();
+                x = barWidth / 2;
+                
+                for (let i = 0; i < bufferLength; i += 3) {
+                    const v = dataArray[i] / 256.0;
+                    const y = canvas.height - (v * canvas.height * 0.8);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += barWidth;
+                }
+                
+                ctx.strokeStyle = `hsla(${hueBase}, 70%, 70%, 0.2)`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            function drawComplexSpectrum(ctx, dataArray, bufferLength, canvas, hueBase) {
+                // Gamma phase: Microtonal-inspired complex visualization
+                
+                // Draw multiple overlapping lines with different offsets
+                for (let offset = 0; offset < 3; offset++) {
+                    ctx.beginPath();
+                    const sliceWidth = canvas.width / bufferLength * 4;
+                    let x = 0;
+                    
+                    for (let i = 0; i < bufferLength; i++) {
+                        // Add microtonal-inspired variations
+                        const idx = (i + (offset * 7)) % bufferLength;
+                        const v = dataArray[idx] / 256.0;
+                        
+                        // Add slight variations for each line
+                        const variationY = Math.sin((i + offset) * 0.1) * 10;
+                        const y = (canvas.height * 0.5) - (v * canvas.height * 0.4) + variationY;
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                        
+                        x += sliceWidth;
+                    }
+                    
+                    // Style each line differently
+                    ctx.strokeStyle = `hsla(${hueBase + (offset * 30)}, 80%, 70%, 0.2)`;
+                    ctx.lineWidth = 1 + offset * 0.5;
+                    ctx.stroke();
+                }
+                
+                // Add spectral dots at peaks
+                for (let i = 0; i < bufferLength; i += 4) {
+                    const v = dataArray[i] / 256.0;
+                    if (v > 0.5) {
+                        const x = (i / bufferLength) * canvas.width;
+                        const y = canvas.height * 0.5 - (v * canvas.height * 0.4);
+                        const radius = v * 3;
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsla(${hueBase + (i / bufferLength * 60)}, 90%, 70%, 0.4)`;
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            function drawCloudSpectrum(ctx, dataArray, bufferLength, canvas, hueBase) {
+                // Delta phase: Atmospheric, cloud-like visualization
+                
+                // Create several layers of "clouds"
+                for (let layer = 0; layer < 3; layer++) {
+                    ctx.beginPath();
+                    
+                    // Sample points for this layer
+                    const points = [];
+                    const count = 10 + layer * 5;
+                    const layerOpacity = 0.1 - (layer * 0.02);
+                    
+                    for (let i = 0; i <= count; i++) {
+                        const x = (i / count) * canvas.width;
+                        const dataIndex = Math.floor((i / count) * bufferLength);
+                        const v = dataArray[dataIndex] / 256.0;
+                        
+                        // Layer-specific vertical position
+                        const baseY = canvas.height * (0.5 + layer * 0.1);
+                        const y = baseY - (v * canvas.height * 0.3);
+                        
+                        points.push({ x, y });
+                    }
+                    
+                    // Draw smooth curve through points
+                    ctx.moveTo(points[0].x, points[0].y);
+                    
+                    for (let i = 0; i < points.length - 1; i++) {
+                        const xc = (points[i].x + points[i + 1].x) / 2;
+                        const yc = (points[i].y + points[i + 1].y) / 2;
+                        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+                    }
+                    
+                    // Complete the path
+                    ctx.lineTo(canvas.width, canvas.height);
+                    ctx.lineTo(0, canvas.height);
+                    
+                    // Create atmospheric gradient
+                    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, `hsla(${hueBase + (layer * 15)}, 70%, 65%, ${layerOpacity})`);
+                    gradient.addColorStop(1, `hsla(${hueBase + (layer * 15)}, 60%, 50%, 0)`);
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fill();
+                }
+                
+                // Add subtle highlight points
+                for (let i = 0; i < bufferLength; i += 16) {
+                    const v = dataArray[i] / 256.0;
+                    if (v > 0.6) {
+                        const x = (i / bufferLength) * canvas.width;
+                        const y = canvas.height * 0.3 - (v * canvas.height * 0.2);
+                        const radius = v * 2;
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsla(${hueBase + 30}, 90%, 75%, 0.3)`;
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            function drawLayeredSpectrum(ctx, dataArray, bufferLength, canvas, hueBase) {
+                // Epsilon phase: Complex, multi-layered visualization
+                
+                // Create a base layer of the spectrum
+                ctx.beginPath();
+                const sliceWidth = canvas.width / (bufferLength / 2);
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i += 2) {
+                    const v = dataArray[i] / 256.0;
+                    const y = canvas.height - (v * canvas.height * 0.7);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                // Create subtle gradient
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, `hsla(${hueBase}, 70%, 60%, 0.2)`);
+                gradient.addColorStop(1, `hsla(${hueBase}, 70%, 60%, 0)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Add frequency bands visualization
+                for (let band = 0; band < 5; band++) {
+                    const bandStart = Math.floor(bufferLength * (band / 5));
+                    const bandEnd = Math.floor(bufferLength * ((band + 1) / 5));
+                    
+                    // Calculate average value for this frequency band
+                    let sum = 0;
+                    for (let i = bandStart; i < bandEnd; i++) {
+                        sum += dataArray[i];
+                    }
+                    const avg = sum / (bandEnd - bandStart) / 256.0;
+                    
+                    // Draw frequency band indicator
+                    const bandWidth = canvas.width / 5;
+                    const x = band * bandWidth;
+                    
+                    ctx.beginPath();
+                    ctx.rect(x, canvas.height - (avg * canvas.height), bandWidth, avg * canvas.height);
+                    ctx.fillStyle = `hsla(${hueBase + (band * 15)}, 80%, 60%, ${0.05 + (avg * 0.1)})`;
+                    ctx.fill();
+                }
+                
+                // Add connecting lines between frequency bands
+                ctx.beginPath();
+                for (let band = 0; band < 5; band++) {
+                    const bandStart = Math.floor(bufferLength * (band / 5));
+                    const bandEnd = Math.floor(bufferLength * ((band + 1) / 5));
+                    
+                    let sum = 0;
+                    for (let i = bandStart; i < bandEnd; i++) {
+                        sum += dataArray[i];
+                    }
+                    const avg = sum / (bandEnd - bandStart) / 256.0;
+                    
+                    const bandWidth = canvas.width / 5;
+                    const x = (band + 0.5) * bandWidth;
+                    const y = canvas.height - (avg * canvas.height);
+                    
+                    if (band === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.strokeStyle = `hsla(${hueBase + 30}, 90%, 70%, 0.3)`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Add subtle motion lines
+                for (let i = 0; i < 5; i++) {
+                    const y = canvas.height * (0.3 + (i * 0.1));
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    
+                    for (let x = 0; x < canvas.width; x += 10) {
+                        // Create subtle wave pattern
+                        const wave = Math.sin(x * 0.02 + (i * Math.PI / 2)) * 5;
+                        ctx.lineTo(x, y + wave);
+                    }
+                    
+                    ctx.strokeStyle = `hsla(${hueBase}, 70%, 70%, 0.1)`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+            
+            // Start the phase transition timer
+            const startPhaseTimer = () => {
+                phaseStartTime = Date.now();
+                updatePhaseTimer();
+                
+                // Set interval to update timer display
+                phaseInterval = setInterval(() => {
+                    const elapsed = Date.now() - phaseStartTime;
+                    if (elapsed >= phaseDuration) {
+                        transitionToNextPhase();
+                    } else {
+                        updatePhaseTimer();
+                    }
+                }, 1000);
+            };
+            
+            // Update the timer display
+            const updatePhaseTimer = () => {
+                const elapsed = Date.now() - phaseStartTime;
+                const remaining = phaseDuration - elapsed;
+                
+                if (remaining <= 0) {
+                    phaseTimer.textContent = "0:00";
+                    return;
+                }
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                phaseTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            // Transition to the next system phase
+            const transitionToNextPhase = async () => {
+                currentPhase = (currentPhase + 1) % phases.length;
+                const newPhase = phases[currentPhase];
+                
+                console.log(`Transitioning to ${newPhase} phase`);
+                
+                // Update UI
+                body.className = `phase-${newPhase}`;
+                phaseIndicator.textContent = `${newPhase} phase`;
+                phaseIndicator.style.opacity = "0.8";
+                
+                // Fade indicator back to normal opacity
+                setTimeout(() => {
+                    phaseIndicator.style.opacity = "0.4";
+                }, 3000);
+                
+                // Update audio processing
+                await updateAudioGraph();
+                
+                // Reset timer
+                phaseStartTime = Date.now();
+                updatePhaseTimer();
+                
+                // Update existing elements with new phase parameters
+                activeElements.forEach(el => {
+                    // Gently update visual representation for existing elements
+                    const element = el.element;
+                    
+                    // Transition colors based on new phase
+                    const params = el.soundParams;
+                    const newToneColor = systemState[newPhase].toneColors[params.tonality] || 'rgba(150, 150, 150, 0.3)';
+                    element.style.setProperty('--tone-color', newToneColor);
+                    
+                    // Randomly update some elements with new properties
+                    if (Math.random() < 0.7) {
+                        // Reinterpret some sound parameters with new phase rules
+                        const updatedParams = interpretWordWithPhase(el.word, newPhase);
+                        el.soundParams = updatedParams;
+                        
+                        // Update rhythm
+                        if (el.intervalId) {
+                            clearInterval(el.intervalId);
+                            
+                            // Calculate new loop time based on updated parameters
+                            const tempoInMs = 60000 / updatedParams.tempo;
+                            const patternSum = updatedParams.pattern.reduce((a, b) => a + b, 0);
+                            const loopTime = tempoInMs * patternSum;
+                            
+                            // Start new loop
+                            el.intervalId = setInterval(() => {
+                                playSoundWithParams(updatedParams);
+                                
+                                // Visual pulse
+                                element.style.transform = 'scale(1.08)';
+                                setTimeout(() => {
+                                    element.style.transform = 'scale(1)';
+                                }, 150);
+                            }, loopTime);
+                        }
+                    }
+                });
+            };
+            
+            // Event Listeners
+            beginButton.addEventListener('click', () => {
+                initAudio();
+                welcomeScreen.classList.add('hidden');
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                }, 1000);
+                
+                // Start the phase timer
+                startPhaseTimer();
+                
+                // Focus input for immediate interaction
+                setTimeout(() => textInput.focus(), 200);
+            });
+            
+            textInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const text = textInput.value.trim();
+                    if (text) {
+                        processText(text);
+                        textInput.value = '';
+                    }
+                }
+            });
+            
+            textInput.addEventListener('input', (e) => {
+                if (e.inputType === 'insertText' && e.data) {
+                    createParticle(e.data);
+                }
+            });
+            
+            clearButton.addEventListener('click', clearCanvas);
+            
+            infoButton.addEventListener('click', () => {
+                const currentPhaseName = phases[currentPhase];
+                
+                // Phase-specific info
+                const phaseInfo = {
+                    alpha: "one",
+                    beta: "two.",
+                    gamma: "three",
+                    delta: "four",
+                    epsilon: "last"
+                };
+                
+                alert(`SONIC VERSE\n\nCurrent Phase: ${currentPhaseName.toUpperCase()}\n\n${phaseInfo[currentPhaseName]}\n\nType words to create unique sounds. Each character and word structure influences different sound parameters.\n\nThe system transforms every 5 minutes, reinterpreting existing sounds and introducing new possibilities.`);
+            });
+            
+            // Process text into sounds
+            function processText(text) {
+                if (!audioInitialized) initAudio();
+                
+                const words = text.split(/\s+/);
+                
+                words.forEach(word => {
+                    // Place words in balanced positions
+                    const canvasRect = soundCanvas.getBoundingClientRect();
+                    const x = Math.random() * (canvasRect.width - 80);
+                    const y = Math.random() * (canvasRect.height - 40);
+                    
+                    createWordElement(word, x, y);
+                });
+            }
+            
+            function createWordElement(word, x, y) {
+                // Create DOM element
+                const element = document.createElement('div');
+                element.classList.add('word-element');
+                element.textContent = word;
+                
+                // Position as specified
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+                element.style.opacity = '0';
+                
+                soundCanvas.appendChild(element);
+                
+                // Parse the sound parameters from the word using current phase's interpretation
+                const currentPhaseName = phases[currentPhase];
+                const soundParams = interpretWordWithPhase(word, currentPhaseName);
+                
+                // Set visual indicators
+                element.style.setProperty('--tone-color', systemState[currentPhaseName].toneColors[soundParams.tonality] || 'rgba(150, 150, 150, 0.3)');
+                element.style.setProperty('--param-scale', soundParams.paramScale);
+                
+                // Add interaction
+                element.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    playSoundWithParams(soundParams);
+                    
+                    // Visual feedback
+                    element.style.transform = 'scale(1.15)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 200);
+                });
+                
+                // Click fallback
+                element.addEventListener('click', () => {
+                    playSoundWithParams(soundParams);
+                    element.style.transform = 'scale(1.15)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 200);
+                });
+                
+                // Determine sequence length based on word length
+                let sequenceLength = 1; // Default 1 measure
+                
+                if (word.length > 15) {
+                    sequenceLength = 4; // 4 measures for very long words
+                } else if (word.length > 10) {
+                    sequenceLength = 3; // 3 measures for long words
+                } else if (word.length > 5) {
+                    sequenceLength = 2; // 2 measures for medium words
+                }
+                
+                // Adjust loop time based on sequence length
+                const tempoInMs = 60000 / soundParams.tempo;
+                const patternSum = soundParams.pattern.reduce((a, b) => a + b, 0);
+                const loopTime = tempoInMs * patternSum * sequenceLength;
+                
+                const intervalId = setInterval(() => {
+                    playSoundWithParams(soundParams);
+                    
+                    // Visual pulse
+                    element.style.transform = 'scale(1.08)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                }, loopTime);
+                
+                // Store element data
+                const elementData = {
+                    element,
+                    word,
+                    soundParams,
+                    intervalId
+                };
+                
+                activeElements.push(elementData);
+                
+                // Animate appearing
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 10);
+            }
+            
+            // HIGH ENTROPY INTERPRETATION SYSTEM
+            // This is the core of our "Open Work" approach - each phase interprets words differently
+            function interpretWordWithPhase(word, phaseName) {
+                // Get current phase parameters
+                const phaseParams = systemState[phaseName];
+                
+                // Create a word hash for deterministic but varied results
+                let wordHash = 0;
+                for (let i = 0; i < word.length; i++) {
+                    wordHash = ((wordHash << 5) - wordHash) + word.charCodeAt(i);
+                    wordHash = wordHash & wordHash; // Convert to 32bit integer
+                }
+                
+                // Use hash to seed pseudorandom number generation for this word
+                let seed = wordHash + phaseParams.seed;
+                const wordRandom = () => {
+                    seed = (seed * 9301 + 49297) % 233280;
+                    return seed / 233280;
+                };
+                
+                // DEFAULT PARAMETERS
+                const params = {
+                    tonality: 'C',
+                    scale: phaseParams.scaleNames[0],
+                    pattern: phaseParams.rhythmRanges[0],
+                    tempo: 80,
+                    envelope: phaseParams.envelopes[0],
+                    waveform: phaseParams.waveforms[0],
+                    filterType: phaseParams.filterTypes[0],
+                    filterFreq: 1000,
+                    filterQ: 1,
+                    notes: [],
+                    harmonies: [],
+                    paramScale: 0.5,
+                    modulation: phaseParams.modulationTypes[0]
+                };
+                
+                // TONALITY DETERMINATION
+                // First, determine if the word suggests microtonality
+                let microtonalWord = false;
+                
+                // Different phases have different criteria for microtonality
+                if (phaseName === 'alpha') {
+                    microtonalWord = word.length > 8;
+                } else if (phaseName === 'beta') {
+                    microtonalWord = /[zxqjv]/i.test(word);
+                } else if (phaseName === 'gamma') {
+                    microtonalWord = word.split('').some(char => char === char.toUpperCase());
+                } else if (phaseName === 'delta') {
+                    microtonalWord = /[0-9]/.test(word);
+                } else {
+                    microtonalWord = wordHash % 3 === 0;
+                }
+                
+                // Determine base tonality (musical key)
+                if (word.length > 0) {
+                    // Extract the first character that could suggest a tonal center
+                    let tonalChar;
+                    
+                    // Phases differ in how they extract tonality
+                    if (phaseName === 'alpha') {
+                        // First character determines tonality
+                        tonalChar = word.charAt(0).toUpperCase();
+                    } else if (phaseName === 'beta') {
+                        // Last character determines tonality
+                        tonalChar = word.charAt(word.length - 1).toUpperCase();
+                    } else if (phaseName === 'gamma') {
+                        // Most frequent character determines tonality
+                        const charFreq = {};
+                        for (let i = 0; i < word.length; i++) {
+                            const c = word.charAt(i).toUpperCase();
+                            charFreq[c] = (charFreq[c] || 0) + 1;
+                        }
+                        let maxCount = 0;
+                        for (let c in charFreq) {
+                            if (charFreq[c] > maxCount) {
+                                maxCount = charFreq[c];
+                                tonalChar = c;
+                            }
+                        }
+                    } else if (phaseName === 'delta') {
+                        // Middle character determines tonality
+                        const midIndex = Math.floor(word.length / 2);
+                        tonalChar = word.charAt(midIndex).toUpperCase();
+                    } else {
+                        // Sum of character codes modulo 12 determines tonality
+                        let sum = 0;
+                        for (let i = 0; i < word.length; i++) {
+                            sum += word.charCodeAt(i);
+                        }
+                        const index = sum % 12;
+                        tonalChar = String.fromCharCode(65 + index);
+                    }
+                    
+                    // Map to one of 12 keys
+                    const charCode = tonalChar.charCodeAt(0);
+                    const toneIndex = charCode % 12;
+                    params.tonality = phaseParams.toneNames[toneIndex];
+                }
+                
+                // SCALE MODE DETERMINATION
+                // Different ways to determine scale mode based on phase
+                if (phaseName === 'alpha') {
+                    // Vowel count influences scale
+                    const vowelCount = (word.match(/[aeiou]/gi) || []).length;
+                    const scaleIndex = vowelCount % phaseParams.scaleNames.length;
+                    params.scale = phaseParams.scaleNames[scaleIndex];
+                } else if (phaseName === 'beta') {
+                    // Word length influences scale
+                    const scaleIndex = word.length % phaseParams.scaleNames.length;
+                    params.scale = phaseParams.scaleNames[scaleIndex];
+                } else if (phaseName === 'gamma') {
+                    // Consonant types influence scale
+                    if (/[ptkbdg]/i.test(word)) {
+                        params.scale = phaseParams.scaleNames[0];
+                    } else if (/[fvszh]/i.test(word)) {
+                        params.scale = phaseParams.scaleNames[1];
+                    } else if (/[mnlr]/i.test(word)) {
+                        params.scale = phaseParams.scaleNames[2];
+                    } else {
+                        params.scale = phaseParams.scaleNames[3];
+                    }
+                } else if (phaseName === 'delta') {
+                    // First and last character interaction
+                    const first = word.charCodeAt(0);
+                    const last = word.charCodeAt(word.length - 1);
+                    const diff = Math.abs(first - last);
+                    const scaleIndex = diff % phaseParams.scaleNames.length;
+                    params.scale = phaseParams.scaleNames[scaleIndex];
+                } else {
+                    // Hash-based selection
+                    const scaleIndex = wordHash % phaseParams.scaleNames.length;
+                    params.scale = phaseParams.scaleNames[scaleIndex];
+                }
+                
+                // RHYTHM PATTERN DETERMINATION
+                // Different phases use different strategies for rhythm
+                let rhythmIndex;
+                
+                if (phaseName === 'alpha') {
+                    // Second character influences rhythm
+                    if (word.length > 1) {
+                        rhythmIndex = word.charCodeAt(1) % phaseParams.rhythmRanges.length;
+                    } else {
+                        rhythmIndex = 0;
+                    }
+                } else if (phaseName === 'beta') {
+                    // Consonant count influences rhythm
+                    const consonantCount = (word.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+                    rhythmIndex = consonantCount % phaseParams.rhythmRanges.length;
+                } else if (phaseName === 'gamma') {
+                    // Word structure influences rhythm (syllables)
+                    const syllableCount = estimateSyllables(word);
+                    rhythmIndex = syllableCount % phaseParams.rhythmRanges.length;
+                } else if (phaseName === 'delta') {
+                    // Character distribution influences rhythm
+                    // Character distribution influences rhythm
+                    const uniqueChars = new Set(word.split('')).size;
+                    rhythmIndex = uniqueChars % phaseParams.rhythmRanges.length;
+                } else {
+                    // Hash-based with phase variation
+                    rhythmIndex = (wordHash + phaseParams.seed) % phaseParams.rhythmRanges.length;
+                }
+                
+                params.pattern = phaseParams.rhythmRanges[rhythmIndex];
+                
+                // TEMPO DETERMINATION
+                // Phases influence tempo differently
+                if (phaseName === 'alpha') {
+                    // Slower, more ambient tempos (40-90 BPM)
+                    params.tempo = 40 + (word.length * 5);
+                } else if (phaseName === 'beta') {
+                    // Moderate tempos (70-120 BPM)
+                    params.tempo = 70 + (wordHash % 50);
+                } else if (phaseName === 'gamma') {
+                    // Variable tempos based on vowel/consonant ratio
+                    const vowels = (word.match(/[aeiou]/gi) || []).length;
+                    const consonants = (word.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+                    const ratio = vowels / (consonants || 1);
+                    params.tempo = 60 + (ratio * 60);
+                } else if (phaseName === 'delta') {
+                    // Faster tempos (100-160 BPM)
+                    params.tempo = 100 + (wordHash % 60);
+                } else {
+                    // Extreme variation (40-180 BPM)
+                    params.tempo = 40 + (wordHash % 140);
+                }
+                
+                // ENVELOPE DETERMINATION
+                // Select from phase-specific envelopes
+                const envelopeIndex = wordHash % phaseParams.envelopes.length;
+                params.envelope = phaseParams.envelopes[envelopeIndex];
+                
+                // WAVEFORM/TIMBRE DETERMINATION
+                // Different phases emphasize different sine-based timbral qualities
+                let waveformIndex;
+                
+                if (phaseName === 'alpha') {
+                    // Character type influences waveform
+                    if (/[aeiou]/i.test(word)) {
+                        waveformIndex = 0; // Pure sine for vowel-heavy words
+                    } else {
+                        waveformIndex = 1; // Layered sines for consonant-heavy words
+                    }
+                } else if (phaseName === 'beta') {
+                    // Word length influences complexity
+                    waveformIndex = Math.min(word.length % 3, phaseParams.waveforms.length - 1);
+                } else if (phaseName === 'gamma') {
+                    // Character case influences timbre
+                    const upperCount = word.split('').filter(c => c === c.toUpperCase()).length;
+                    waveformIndex = Math.min(upperCount % 3, phaseParams.waveforms.length - 1);
+                } else if (phaseName === 'delta') {
+                    // Special characters influence timbre
+                    if (/[^a-zA-Z0-9]/.test(word)) {
+                        waveformIndex = 2; // More complex timbre for special chars
+                    } else {
+                        waveformIndex = wordHash % phaseParams.waveforms.length;
+                    }
+                } else {
+                    // More complex, layered timbres by default
+                    waveformIndex = 1 + (wordHash % (phaseParams.waveforms.length - 1));
+                }
+                
+                params.waveform = phaseParams.waveforms[waveformIndex];
+                
+                // MODULATION DETERMINATION
+                // Select appropriate modulation type based on word characteristics
+                const modIndex = (wordHash + word.length) % phaseParams.modulationTypes.length;
+                params.modulation = phaseParams.modulationTypes[modIndex];
+                
+                // Adjust modulation parameters based on word
+                if (phaseName === 'gamma' || phaseName === 'epsilon') {
+                    // These phases have more pronounced modulation
+                    params.modulation.depth *= 1.5;
+                }
+                
+                // FILTER DETERMINATION
+                // Different filter strategies per phase
+                if (phaseName === 'alpha') {
+                    // Simple filtering
+                    params.filterType = 'lowpass';
+                    params.filterFreq = 500 + (wordHash % 5000);
+                    params.filterQ = 0.7;
+                } else if (phaseName === 'beta') {
+                    // More varied filtering
+                    const filterIndex = wordHash % phaseParams.filterTypes.length;
+                    params.filterType = phaseParams.filterTypes[filterIndex];
+                    params.filterFreq = 300 + (wordHash % 7000);
+                    params.filterQ = 0.5 + (wordRandom() * 5);
+                } else if (phaseName === 'gamma') {
+                    // More resonant filtering
+                    const filterIndex = (wordHash + 2) % phaseParams.filterTypes.length;
+                    params.filterType = phaseParams.filterTypes[filterIndex];
+                    params.filterFreq = 200 + (wordHash % 4000);
+                    params.filterQ = 3 + (wordRandom() * 7);
+                } else if (phaseName === 'delta') {
+                    // Sweeping filters
+                    const filterIndex = (wordHash + 1) % phaseParams.filterTypes.length;
+                    params.filterType = phaseParams.filterTypes[filterIndex];
+                    params.filterFreq = 100 + (wordHash % 10000);
+                    params.filterQ = 1 + (wordRandom() * 3);
+                } else {
+                    // Extreme filtering
+                    const filterIndex = wordHash % phaseParams.filterTypes.length;
+                    params.filterType = phaseParams.filterTypes[filterIndex];
+                    params.filterFreq = 50 + (wordHash % 15000);
+                    params.filterQ = 0.5 + (wordRandom() * 10);
+                }
+                
+                // PARAMETRIC HARMONY GENERATION
+                // Generate harmony based on word characteristics
+                function generateHarmony(word, phaseName) {
+                    const harmonyParams = [];
+                    
+                    // Extract semantic harmonic parameters from word
+                    const vowelRatio = (word.match(/[aeiou]/gi) || []).length / word.length;
+                    const consonantRatio = (word.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length / word.length;
+                    const specialCharRatio = (word.match(/[^a-zA-Z0-9]/g) || []).length / word.length;
+                    
+                    // Determine interval relationships
+                    const intervalSets = [];
+                    
+                    // Semantic mapping - extract intervals from character relationships
+                    for (let i = 0; i < word.length - 1; i++) {
+                        const c1 = word.charCodeAt(i);
+                        const c2 = word.charCodeAt(i + 1);
+                        const interval = Math.abs(c1 - c2) % 24; // 24 possible intervals
+                        intervalSets.push(interval);
+                    }
+                    
+                    // Create chord structures based on these relations
+                    let baseNote = 0;
+                    
+                    // Phase-specific harmony generation
+                    if (phaseName === 'alpha') {
+                        // More consonant harmonies
+                        intervalSets.forEach(interval => {
+                            const harmony = [0]; // Root note
+                            if (interval > 12) harmony.push(7); // Perfect fifth
+                            if (vowelRatio > 0.5) harmony.push(4); // Major third
+                            else harmony.push(3); // Minor third
+                            harmonyParams.push(harmony);
+                        });
+                    } else if (phaseName === 'beta') {
+                        // More structured harmonies
+                        intervalSets.forEach(interval => {
+                            const harmony = [0]; // Root note
+                            harmony.push(interval % 12); // Derived interval
+                            harmony.push((interval + 7) % 12); // Stacked interval
+                            harmonyParams.push(harmony);
+                        });
+                    } else if (phaseName === 'gamma') {
+                        // Microtonal-inspired harmonies
+                        for (let i = 0; i < Math.min(intervalSets.length, 3); i++) {
+                            const interval = intervalSets[i];
+                            const harmony = [0]; // Root note
+                            
+                            // Add clustered intervals
+                            harmony.push(interval % 12);
+                            if (i % 2 === 0) harmony.push((interval + 1) % 24);
+                            else harmony.push((interval - 1) % 24);
+                            
+                            harmonyParams.push(harmony);
+                        }
+                    } else if (phaseName === 'delta') {
+                        // Atmospheric harmonies with wide spacing
+                        intervalSets.forEach(interval => {
+                            const harmony = [0]; // Root note
+                            if (vowelRatio > consonantRatio) {
+                                // More open voicings
+                                harmony.push(7); // Perfect fifth
+                                harmony.push(14); // Octave + perfect fifth
+                            } else {
+                                // More dense clusters
+                                harmony.push(interval % 12);
+                                harmony.push(12 + (interval % 12)); // Octave + interval
+                            }
+                            harmonyParams.push(harmony);
+                        });
+                    } else {
+                        // Complex, layered harmonies
+                        for (let i = 0; i < Math.min(intervalSets.length, 4); i++) {
+                            const interval = intervalSets[i];
+                            const harmony = [0]; // Root note
+                            
+                            // Generate more experimental interval stacks
+                            for (let j = 1; j < 4; j++) {
+                                harmony.push((interval * j) % 24);
+                            }
+                            
+                            harmonyParams.push(harmony);
+                        }
+                    }
+                    
+                    return harmonyParams;
+                }
+                
+                // Generate harmonies for this word
+                params.harmonies = generateHarmony(word, phaseName);
+                
+                // NOTE SELECTION
+                // Generate a sequence of notes based on the word and current phase parameters
+                const scaleMode = phaseParams.scaleModes[params.scale];
+                const baseScale = phaseParams.scales[params.tonality];
+                
+                // Different note selection strategies per phase
+                if (phaseName === 'alpha') {
+                    // Simple note sequences
+                    for (let i = 0; i < Math.min(word.length, 8); i++) {
+                        const charCode = word.charCodeAt(i);
+                        const modeIndex = charCode % scaleMode.length;
+                        const scaleIndex = scaleMode[modeIndex];
+                        params.notes.push(baseScale[scaleIndex]);
+                    }
+                } else if (phaseName === 'beta') {
+                    // Using our parametric harmony system
+                    params.harmonies.forEach(harmony => {
+                        const rootIndex = wordHash % scaleMode.length;
+                        const root = scaleMode[rootIndex];
+                        
+                        // Generate notes from harmony intervals
+                        harmony.forEach(interval => {
+                            const noteIndex = (root + interval) % 36; // Keep in our 3-octave range
+                            params.notes.push(baseScale[noteIndex]);
+                        });
+                    });
+                } else if (phaseName === 'gamma') {
+                    // More complex patterns based on word structure
+                    const uniqueChars = [...new Set(word.split(''))];
+                    for (let i = 0; i < uniqueChars.length; i++) {
+                        const charCode = uniqueChars[i].charCodeAt(0);
+                        const modeIndex = charCode % scaleMode.length;
+                        const scaleIndex = scaleMode[modeIndex];
+                        params.notes.push(baseScale[scaleIndex]);
+                    }
+                } else if (phaseName === 'delta') {
+                    // Patterns based on syllables
+                    const syllables = word.match(/[aeiouy]{1,2}/gi) || [];
+                    for (let i = 0; i < syllables.length; i++) {
+                        const syllable = syllables[i];
+                        const charCode = syllable.charCodeAt(0);
+                        const modeIndex = charCode % scaleMode.length;
+                        const scaleIndex = scaleMode[modeIndex];
+                        params.notes.push(baseScale[scaleIndex]);
+                    }
+                } else {
+                    // Random walks through the scale
+                    let currentIndex = wordHash % scaleMode.length;
+                    for (let i = 0; i < word.length; i++) {
+                        const step = (word.charCodeAt(i) % 5) - 2; // -2 to +2 steps
+                        currentIndex = Math.max(0, Math.min(scaleMode.length - 1, currentIndex + step));
+                        const scaleIndex = scaleMode[currentIndex];
+                        params.notes.push(baseScale[scaleIndex]);
+                    }
+                }
+                
+                // If no notes were generated, add a default note
+                if (params.notes.length === 0) {
+                    const defaultIndex = scaleMode[0];
+                    params.notes.push(baseScale[defaultIndex]);
+                }
+                
+                // Apply microtonal offsets if applicable
+                if (microtonalWord) {
+                    params.notes = params.notes.map(freq => {
+                        // Apply the microtonal offset for this key
+                        const offset = phaseParams.microtonalOffsets[params.tonality];
+                        return freq * Math.pow(2, offset / 1200); // Convert cents to frequency ratio
+                    });
+                }
+                
+                // Visual parameter scale indicator
+                params.paramScale = 0.2 + ((wordHash % 80) / 100);
+                
+                return params;
+            }
+            
+            // Estimate syllables in a word - helps determine rhythm
+            function estimateSyllables(word) {
+                word = word.toLowerCase();
+                if (!word) return 0;
+                
+                // Count vowel groups as syllables
+                const vowelGroups = word.match(/[aeiouy]+/g);
+                if (!vowelGroups) return 1;
+                
+                // Adjust for trailing e (silent e)
+                let count = vowelGroups.length;
+                if (word.endsWith('e')) count--;
+                
+                // Handle edge cases
+                if (count === 0) count = 1;
+                
+                return count;
+            }
+            
+            // Play sound with the given parameters
+            function playSoundWithParams(params) {
+                if (!audioContext) return;
+                
+                const now = audioContext.currentTime;
+                
+                // Create a channel for this sound
+                const channel = audioContext.createGain();
+                channel.gain.value = 0;
+                
+                // Create filter based on params
+                const filter = audioContext.createBiquadFilter();
+                filter.type = params.filterType;
+                filter.frequency.value = params.filterFreq;
+                filter.Q.value = params.filterQ;
+                
+                // Create oscillators based on waveform parameter
+                const oscillators = [];
+                let waveforms = params.waveform;
+                
+                if (!Array.isArray(waveforms)) {
+                    waveforms = [waveforms];
+                }
+                
+                // Current phase name
+                const currentPhaseName = phases[currentPhase];
+                
+                // Use all specified notes or just the first one based on phase
+                let notesToUse = [params.notes[0]]; // Default to just the first note
+                
+                // Phase-specific note selection
+                if (currentPhaseName === 'beta' || currentPhaseName === 'epsilon') {
+                    // Use more notes for these phases
+                    notesToUse = params.notes.slice(0, Math.min(params.notes.length, 4));
+                } else if (currentPhaseName === 'gamma' && params.notes.length > 1) {
+                    // Use 2 notes for gamma phase if available
+                    notesToUse = params.notes.slice(0, 2);
+                }
+                
+                // Create oscillators for each note
+                notesToUse.forEach(noteFreq => {
+                    waveforms.forEach((oscType, i) => {
+                        // Handle simple oscillators vs. modulated oscillators
+                        if (typeof oscType === 'string' && !oscType.includes('-')) {
+                            // Simple oscillator
+                            const osc = audioContext.createOscillator();
+                            osc.type = oscType;
+                            
+                            // Apply frequency with slight detuning for richness
+                            const detune = (i * 5) - ((waveforms.length - 1) * 2.5);
+                            osc.frequency.value = noteFreq;
+                            osc.detune.value = detune;
+                            
+                            osc.connect(filter);
+                            oscillators.push({osc: osc, type: 'simple'});
+                        } else {
+                            // Modulated oscillator
+                            const [result, modulators] = createModulatedOscillator(oscType, noteFreq, now);
+                            result.connect(filter);
+                            oscillators.push({osc: result, type: 'modulated', modulators: modulators});
+                        }
+                    });
+                });
+                
+                // Helper function to create modulated oscillators
+                function createModulatedOscillator(type, freq, startTime) {
+                    const osc = audioContext.createOscillator();
+                    osc.type = 'sine'; // Base is always sine
+                    osc.frequency.value = freq;
+                    
+                    const modulators = [];
+                    
+                    if (type === 'sine-fm') {
+                        // Frequency modulation
+                        const modulator = audioContext.createOscillator();
+                        const modGain = audioContext.createGain();
+                        
+                        modulator.type = 'sine';
+                        modulator.frequency.value = freq * (0.1 + (Math.random() * 0.3)); // Modulation ratio
+                        modGain.gain.value = freq * (0.01 + (Math.random() * 0.1)); // Modulation depth
+                        
+                        modulator.connect(modGain);
+                        modGain.connect(osc.frequency);
+                        modulator.start(startTime);
+                        
+                        modulators.push(modulator);
+                    }
+                    else if (type === 'sine-am') {
+                        // Amplitude modulation
+                        const modulator = audioContext.createOscillator();
+                        const modGain = audioContext.createGain();
+                        const constantGain = audioContext.createGain();
+                        
+                        modulator.type = 'sine';
+                        modulator.frequency.value = 2 + (Math.random() * 5); // Slower modulation
+                        
+                        // Scale for proper AM (DC offset + modulation)
+                        constantGain.gain.value = 1.0; // DC offset
+                        modGain.gain.value = 0.5; // Modulation depth
+                        
+                        modulator.connect(modGain);
+                        modGain.connect(constantGain.gain);
+                        
+                        modulators.push(modulator);
+                        modulators.push(constantGain);
+                        
+                        modulator.start(startTime);
+                        
+                        return [osc, modulators];
+                    }
+                    else if (type === 'sine-ring') {
+                        // Ring modulation
+                        const modulator = audioContext.createOscillator();
+                        const ringGain = audioContext.createGain();
+                        
+                        modulator.type = 'sine';
+                        modulator.frequency.value = freq * (1 + (Math.random() * 0.2)); // Frequency ratio
+                        
+                        // Ring modulation through gain node
+                        ringGain.gain.value = 0;
+                        modulator.connect(ringGain.gain);
+                        
+                        modulators.push(modulator);
+                        modulators.push(ringGain);
+                        
+                        modulator.start(startTime);
+                        
+                        return [osc, modulators];
+                    }
+                    else if (type === 'sine-pulse') {
+                        // Pulse-like sine using gain modulation
+                        const modulator = audioContext.createOscillator();
+                        const modGain = audioContext.createGain();
+                        
+                        modulator.type = 'square';
+                        modulator.frequency.value = 1 + (Math.random() * 3); // Pulse rate
+                        
+                        // Connect square LFO to gain for pulse effect
+                        modGain.gain.value = 0.8;
+                        modulator.connect(modGain);
+                        modGain.connect(osc.frequency);
+                        
+                        modulators.push(modulator);
+                        
+                        modulator.start(startTime);
+                    }
+                    else if (type === 'sine-grain') {
+                        // Granular-inspired modulation
+                        const modulator = audioContext.createOscillator();
+                        const grainGain = audioContext.createGain();
+                        
+                        modulator.type = 'sawtooth';
+                        modulator.frequency.value = 10 + (Math.random() * 20); // Grain rate
+                        
+                        grainGain.gain.value = 10 + (Math.random() * 20); // Grain depth
+                        modulator.connect(grainGain);
+                        grainGain.connect(osc.detune);
+                        
+                        modulators.push(modulator);
+                        
+                        modulator.start(startTime);
+                    }
+                    else if (type === 'sine-noise') {
+                        // Noise-influenced sine
+                        // Create a buffer of noise and use it to modulate
+                        const bufferSize = audioContext.sampleRate * 0.2; // 200ms of noise
+                        const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                        const data = noiseBuffer.getChannelData(0);
+                        
+                        // Fill with noise
+                        for (let i = 0; i < bufferSize; i++) {
+                            data[i] = Math.random() * 2 - 1;
+                        }
+                        
+                        // Create noise source
+                        const noiseSource = audioContext.createBufferSource();
+                        noiseSource.buffer = noiseBuffer;
+                        noiseSource.loop = true;
+                        
+                        // Connect through gain
+                        const noiseGain = audioContext.createGain();
+                        noiseGain.gain.value = 20; // Subtle noise influence
+                        
+                        noiseSource.connect(noiseGain);
+                        noiseGain.connect(osc.detune);
+                        
+                        noiseSource.start(startTime);
+                        
+                        modulators.push(noiseSource);
+                    }
+                    
+                    return [osc, modulators];
+                }
+                
+                // Connect filter to channel
+                filter.connect(channel);
+                
+                // Connect channel to master effects
+                channel.connect(masterGain);
+                
+                // Get envelope parameters
+                const env = params.envelope;
+                
+                // Apply envelope
+                channel.gain.setValueAtTime(0, now);
+                channel.gain.linearRampToValueAtTime(0.7, now + env.attack);
+                channel.gain.linearRampToValueAtTime(env.sustain * 0.7, now + env.attack + env.decay);
+                channel.gain.setValueAtTime(env.sustain * 0.7, now + env.attack + env.decay);
+                channel.gain.exponentialRampToValueAtTime(0.001, now + env.attack + env.decay + env.release);
+                
+                // Apply filter envelope - different for each phase
+                if (currentPhaseName === 'alpha') {
+                    // Simple filter envelope
+                    filter.frequency.setValueAtTime(params.filterFreq, now);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 2, now + env.attack);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 0.8, now + env.attack + env.decay + env.release);
+                } else if (currentPhaseName === 'beta') {
+                    // More dramatic filter movement
+                    filter.frequency.setValueAtTime(params.filterFreq * 0.5, now);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 3, now + env.attack);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 0.7, now + env.attack + env.decay);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 0.4, now + env.attack + env.decay + env.release);
+                } else if (currentPhaseName === 'gamma') {
+                    // Multiple filter movements
+                    filter.frequency.setValueAtTime(params.filterFreq, now);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 1.5, now + env.attack * 0.5);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 0.8, now + env.attack);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 2, now + env.attack + env.decay * 0.5);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 0.6, now + env.attack + env.decay + env.release);
+                } else if (currentPhaseName === 'delta') {
+                    // Slow, evolving filter movement
+                    filter.frequency.setValueAtTime(params.filterFreq * 0.7, now);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 1.2, now + env.attack + env.decay);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 0.5, now + env.attack + env.decay + env.release);
+                } else {
+                    // Complex, multi-stage filter
+                    filter.frequency.setValueAtTime(params.filterFreq * 0.4, now);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 4, now + env.attack * 0.3);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 0.8, now + env.attack);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 2, now + env.attack + env.decay * 0.5);
+                    filter.frequency.linearRampToValueAtTime(params.filterFreq * 0.6, now + env.attack + env.decay);
+                    filter.frequency.exponentialRampToValueAtTime(params.filterFreq * 0.3, now + env.attack + env.decay + env.release);
+                }
+                
+                // Start oscillators
+                oscillators.forEach(oscData => {
+                    if (oscData.type === 'simple') {
+                        oscData.osc.start(now);
+                        oscData.osc.stop(now + env.attack + env.decay + env.release + 0.1);
+                    } else {
+                        oscData.osc.start(now);
+                        oscData.osc.stop(now + env.attack + env.decay + env.release + 0.1);
+                    }
+                });
+            }
+            
+            function createParticle(char) {
+                // Create particle element
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Current phase influences particle appearance
+                const currentPhaseName = phases[currentPhase];
+                
+                // Size based on character properties and phase
+                const isVowel = /[aeiou]/i.test(char);
+                const isPunctuation = /[.,;:!?]/.test(char);
+                let size;
+                
+                if (currentPhaseName === 'alpha') {
+                    size = isPunctuation ? 2 : (isVowel ? 6 : 4);
+                } else if (currentPhaseName === 'beta') {
+                    size = isPunctuation ? 3 : (isVowel ? 5 : 7);
+                } else if (currentPhaseName === 'gamma') {
+                    size = isPunctuation ? 1 : (isVowel ? 8 : 3);
+                } else if (currentPhaseName === 'delta') {
+                    size = isPunctuation ? 4 : (isVowel ? 3 : 6);
+                } else {
+                    size = isPunctuation ? 2 : (isVowel ? 9 : 5);
+                }
+                
+                // Color based on character type and current phase
+                let color;
+                const phaseAccent = getComputedStyle(document.body).getPropertyValue('--phase-accent');
+                
+                if (/[A-G]/i.test(char)) {
+                    // Musical notes get tone colors from current phase
+                    const noteName = char.toUpperCase();
+                    const noteKey = noteName + (noteName === 'A' || noteName === 'B' ? '' : '#');
+                    color = systemState[currentPhaseName].toneColors[noteKey] || phaseAccent;
+                } else if (isVowel) {
+                    color = `rgba(160, 160, 190, ${currentPhaseName === 'gamma' ? '0.6' : '0.35'})`;
+                } else if (isPunctuation) {
+                    // Punctuation gets phase-specific styling
+                    if (currentPhaseName === 'alpha') {
+                        color = 'rgba(190, 190, 190, 0.25)';
+                    } else if (currentPhaseName === 'beta') {
+                        color = 'rgba(170, 200, 170, 0.3)';
+                    } else if (currentPhaseName === 'gamma') {
+                        color = 'rgba(200, 170, 190, 0.35)';
+                    } else if (currentPhaseName === 'delta') {
+                        color = 'rgba(220, 190, 150, 0.3)';
+                    } else {
+                        color = 'rgba(180, 180, 210, 0.4)';
+                    }
+                } else {
+                    // Default character styling with phase accent
+                    color = phaseAccent;
+                }
+                
+                // Apply size and styling
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = color;
+                
+                // Phase-specific shape variations
+                if (currentPhaseName === 'beta') {
+                    particle.style.borderRadius = '2px'; // Slightly rounded squares
+                } else if (currentPhaseName === 'gamma') {
+                    particle.style.borderRadius = '0'; // Sharp squares
+                    particle.style.transform = 'rotate(45deg)'; // Diamond shape
+                } else if (currentPhaseName === 'delta') {
+                    particle.style.borderRadius = '50% 50% 0 50%'; // Teardrop shape
+                } else if (currentPhaseName === 'epsilon') {
+                    particle.style.borderRadius = '50% 0 50% 0'; // Star-like shape
+                }
+                
+                // Position near text input with phase-specific variations
+                const inputRect = textInput.getBoundingClientRect();
+                let x, y;
+                
+                if (currentPhaseName === 'alpha') {
+                    // Standard positioning
+                    x = inputRect.left + (Math.random() * inputRect.width);
+                    y = inputRect.top - 10;
+                } else if (currentPhaseName === 'beta') {
+                    // More horizontal spread
+                    x = inputRect.left + (Math.random() * inputRect.width * 1.2) - (inputRect.width * 0.1);
+                    y = inputRect.top - 5;
+                } else if (currentPhaseName === 'gamma') {
+                    // Particles emerge from center
+                    x = inputRect.left + (inputRect.width / 2) + (Math.random() * 40 - 20);
+                    y = inputRect.top - 5;
+                } else if (currentPhaseName === 'delta') {
+                    // Particles from both sides
+                    x = inputRect.left + (Math.random() > 0.5 ? 
+                        (Math.random() * inputRect.width * 0.3) : 
+                        (inputRect.width * 0.7 + Math.random() * inputRect.width * 0.3));
+                    y = inputRect.top - 8;
+                } else {
+                    // Particles from entire width
+                    x = inputRect.left + (Math.random() * inputRect.width);
+                    y = inputRect.top - 12;
+                }
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                document.body.appendChild(particle);
+                
+                // Animate with phase-specific motion patterns
+                let targetY, targetX;
+                let duration;
+                
+                if (currentPhaseName === 'alpha') {
+                    // Gentle upward drift
+                    targetY = y - 30 - (Math.random() * 50);
+                    targetX = x + (Math.random() * 20 - 10);
+                    duration = 1200 + (Math.random() * 800);
+                } else if (currentPhaseName === 'beta') {
+                    // Faster, more horizontal movement
+                    targetY = y - 20 - (Math.random() * 30);
+                    targetX = x + (Math.random() * 60 - 30);
+                    duration = 800 + (Math.random() * 600);
+                } else if (currentPhaseName === 'gamma') {
+                    // Spiral-like movement
+                    targetY = y - 40 - (Math.random() * 40);
+                    targetX = x + (Math.sin(Math.random() * Math.PI * 2) * 30);
+                    duration = 1500 + (Math.random() * 1000);
+                } else if (currentPhaseName === 'delta') {
+                    // Quick, decisive movement
+                    targetY = y - 60 - (Math.random() * 30);
+                    targetX = x + (Math.random() * 40 - 20);
+                    duration = 700 + (Math.random() * 500);
+                } else {
+                    // Complex, swirling movement
+                    targetY = y - 70 - (Math.random() * 50);
+                    targetX = x + (Math.random() * 80 - 40);
+                    duration = 2000 + (Math.random() * 1000);
+                }
+                
+                // Animation
+                let startTime = performance.now();
+                
+                function animateParticle(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Phase-specific easing
+                    let easing;
+                    if (currentPhaseName === 'alpha') {
+                        // Gentle ease out
+                        easing = 1 - Math.pow(1 - progress, 2);
+                    } else if (currentPhaseName === 'beta') {
+                        // More linear movement
+                        easing = progress;
+                    } else if (currentPhaseName === 'gamma') {
+                        // Bouncy movement
+                        easing = progress < 0.5 ? 
+                            2 * progress * progress : 
+                            1 - Math.pow(-2 * progress + 2, 2) / 2;
+                    } else if (currentPhaseName === 'delta') {
+                        // Quick then slow
+                        easing = 1 - Math.pow(1 - progress, 3);
+                    } else {
+                        // Complex movement
+                        easing = progress < 0.5 ? 
+                            4 * progress * progress * progress : 
+                            1 - Math.pow(-2 * progress + 2, 3) / 2;
+                    }
+                    
+                    // Calculate position with phase-specific variations
+                    const currentY = y + (targetY - y) * easing;
+                    
+                    // Add slight curve to the movement based on phase
+                    let currentX;
+                    if (currentPhaseName === 'gamma') {
+                        // Add sine wave movement
+                        const curve = Math.sin(progress * Math.PI * 2) * 15;
+                        currentX = x + ((targetX - x) * easing) + curve;
+                    } else if (currentPhaseName === 'epsilon') {
+                        // Add more complex movement
+                        const curve = Math.sin(progress * Math.PI * 3) * 10;
+                        currentX = x + ((targetX - x) * easing) + curve;
+                    } else {
+                        currentX = x + ((targetX - x) * easing);
+                    }
+                    
+                    // Phase-specific transformations
+                    let rotation, scale;
+                    if (currentPhaseName === 'alpha') {
+                        rotation = progress * 10;
+                        scale = 1;
+                    } else if (currentPhaseName === 'beta') {
+                        rotation = progress * 30;
+                        scale = 1 - (progress * 0.3);
+                    } else if (currentPhaseName === 'gamma') {
+                        rotation = progress * 45 * (Math.random() > 0.5 ? 1 : -1);
+                        scale = 1 + (Math.sin(progress * Math.PI) * 0.2);
+                    } else if (currentPhaseName === 'delta') {
+                        rotation = progress * 20 * (Math.random() > 0.5 ? 1 : -1);
+                        scale = 1 - (progress * 0.5);
+                    } else {
+                        rotation = progress * 90 * (Math.random() > 0.5 ? 1 : -1);
+                        scale = 1 + (Math.sin(progress * Math.PI * 2) * 0.3);
+                    }
+                    
+                    // Apply transformations
+                    particle.style.transform = `translate(${currentX - x}px, ${currentY - y}px) rotate(${rotation}deg) scale(${scale})`;
+                    
+                    // Phase-specific opacity curves
+                    let opacity;
+                    if (currentPhaseName === 'alpha') {
+                        // Gentle fade
+                        opacity = 1 - easing;
+                    } else if (currentPhaseName === 'beta') {
+                        // Hold opacity longer
+                        opacity = progress < 0.7 ? 1 : 1 - ((progress - 0.7) / 0.3);
+                    } else if (currentPhaseName === 'gamma') {
+                        // Pulsating opacity
+                        opacity = 1 - (easing * 0.8) - (Math.sin(progress * Math.PI * 4) * 0.2);
+                    } else if (currentPhaseName === 'delta') {
+                        // Quick fade
+                        opacity = 1 - (progress * progress);
+                    } else {
+                        // Complex fade
+                        opacity = 1 - easing + (Math.sin(progress * Math.PI * 2) * 0.2);
+                    }
+                    
+                    particle.style.opacity = Math.max(0, opacity);
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                }
+                
+                requestAnimationFrame(animateParticle);
+            }
+            
+            function clearCanvas() {
+                activeElements.forEach(item => {
+                    // Clear interval
+                    if (item.intervalId) {
+                        clearInterval(item.intervalId);
+                    }
+                    
+                    // Animate removal with phase-specific style
+                    const element = item.element;
+                    const currentPhaseName = phases[currentPhase];
+                    
+                    // Different clear animations based on phase
+                    if (currentPhaseName === 'alpha') {
+                        // Simple fade out
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(20px)';
+                    } else if (currentPhaseName === 'beta') {
+                        // Fade and shrink
+                        element.style.opacity = '0';
+                        element.style.transform = 'scale(0.8)';
+                    } else if (currentPhaseName === 'gamma') {
+                        // Spin out
+                        element.style.opacity = '0';
+                        element.style.transform = 'rotate(10deg) translateX(30px)';
+                    } else if (currentPhaseName === 'delta') {
+                        // Drop down
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(40px)';
+                    } else {
+                        // Fade and fly up
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(-30px) scale(0.9)';
+                    }
+                    
+                    setTimeout(() => {
+                        element.remove();
+                    }, 500);
+                });
+                
+                activeElements = [];
+                
+                // Update phase indicator
+                phaseIndicator.textContent = `${phases[currentPhase]} phase - canvas cleared`;
+                setTimeout(() => {
+                    phaseIndicator.textContent = `${phases[currentPhase]} phase`;
+                }, 2000);
+            }
+            
+            // Handle window resize for spectrogram canvas
+            window.addEventListener('resize', () => {
+                if (spectrogramCanvas) {
+                    spectrogramCanvas.width = window.innerWidth;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
