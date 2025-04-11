@@ -36,7 +36,7 @@
             width: 100vw;
             overflow: hidden;
             touch-action: manipulation;
-            position: fixed;
+            position: relative; /* Changed from fixed to relative */
             transition: background-color 2s ease;
         }
         
@@ -97,6 +97,7 @@
             overflow: hidden;
             touch-action: none;
             transition: background-color 3s ease;
+            height: calc(100% - 15vh); /* Ensure there's space for input */
         }
         
         /* Word Elements */
@@ -149,7 +150,8 @@
         
         /* Input Area */
         .input-area {
-            height: 12vh;
+            height: 15vh; /* Increased height for better tap targets */
+            min-height: 60px; /* Ensure minimum height on small devices */
             width: 100%;
             border-top: 1px solid rgba(0, 0, 0, 0.04);
             display: flex;
@@ -157,6 +159,9 @@
             justify-content: center;
             padding: 0 4vw;
             transition: border-color 2s ease;
+            position: relative; /* Added position relative */
+            bottom: 0; /* Ensure input stays at bottom */
+            background-color: var(--bg-color); /* Ensure input has background */
         }
         
         .input-container {
@@ -166,15 +171,17 @@
         
         #textInput {
             width: 100%;
-            padding: 3vw;
+            padding: 12px; /* Fixed padding instead of relative */
             border: none;
             background-color: var(--input-bg);
             font-family: inherit;
-            font-size: 4.5vw;
+            font-size: 16px; /* Fixed font size for better mobile readability */
             outline: none;
             border-radius: 2px;
             letter-spacing: 0.02em;
             transition: background-color 2s ease;
+            -webkit-appearance: none; /* Fix for iOS input styling */
+            appearance: none;
         }
         
         /* Controls */
@@ -191,22 +198,24 @@
         .control-button {
             background: none;
             border: none;
-            width: 10vw;
-            height: 10vw;
+            width: 40px; /* Fixed width instead of relative */
+            height: 40px; /* Fixed height for better tap targets */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5vw;
+            font-size: 20px; /* Fixed font size */
             opacity: 0.4;
             transition: opacity 0.2s;
+            cursor: pointer;
+            touch-action: manipulation;
         }
         
         /* System Phase Indicator */
         .phase-indicator {
             position: absolute;
-            bottom: 14vh;
+            bottom: 16vh; /* Adjusted to account for larger input area */
             left: 4vw;
-            font-size: 3.5vw;
+            font-size: 14px; /* Fixed font size */
             opacity: 0.4;
             pointer-events: none;
             letter-spacing: 0.05em;
@@ -216,9 +225,9 @@
         /* Countdown Timer */
         .timer {
             position: absolute;
-            bottom: 14vh;
+            bottom: 16vh; /* Adjusted to account for larger input area */
             right: 4vw;
-            font-size: 3.5vw;
+            font-size: 14px; /* Fixed font size */
             opacity: 0.4;
             pointer-events: none;
             letter-spacing: 0.05em;
@@ -257,7 +266,7 @@
         /* Spectrogram */
         .spectrogram {
             position: absolute;
-            bottom: 13vh;
+            bottom: 16vh; /* Adjusted to account for larger input area */
             left: 0;
             width: 100%;
             height: 60px;
@@ -269,6 +278,54 @@
         .hidden {
             opacity: 0;
             pointer-events: none;
+        }
+        
+        /* Media queries for better mobile support */
+        @media screen and (max-width: 480px) {
+            .welcome h1 {
+                font-size: 32px;
+            }
+            
+            .welcome p {
+                font-size: 16px;
+            }
+            
+            .welcome button {
+                font-size: 16px;
+                padding: 12px 24px;
+            }
+            
+            .input-area {
+                height: 70px; /* Fixed height on small screens */
+            }
+            
+            #textInput {
+                font-size: 16px; /* iOS requires minimum 16px to prevent zoom */
+            }
+            
+            .phase-indicator, .timer {
+                font-size: 12px;
+                bottom: 75px; /* Fixed positioning */
+            }
+            
+            .spectrogram {
+                bottom: 75px; /* Fixed positioning */
+            }
+        }
+        
+        /* Fix for iOS viewport height issues */
+        @supports (-webkit-touch-callout: none) {
+            body, .container {
+                height: -webkit-fill-available;
+            }
+            
+            .sound-canvas {
+                height: calc(100vh - 70px - env(safe-area-inset-bottom));
+            }
+            
+            .input-area {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
         }
     </style>
 </head>
@@ -286,7 +343,7 @@
         
         <div class="input-area">
             <div class="input-container">
-                <input type="text" id="textInput" placeholder="type words, press enter..." autocomplete="off" autocapitalize="off">
+                <input type="text" id="textInput" placeholder="type words, press enter..." autocomplete="off" autocapitalize="off" autocorrect="off">
             </div>
         </div>
         
